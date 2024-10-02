@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ScanRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    public long id;
 
     private String url;
 
