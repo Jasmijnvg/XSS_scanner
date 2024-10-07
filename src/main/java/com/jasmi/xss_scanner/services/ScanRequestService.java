@@ -45,10 +45,12 @@ public class ScanRequestService {
         ScanRequest sr = scanRequestMapper.toScanRequest(scanRequest);
         ScanRequest savedScanRequest = scanRequestRepository.save(sr);
         return scanRequestMapper.toScanRequestDto(savedScanRequest);
-
     }
 
     public ScanRequestOutputDto updateScanRequest(long id, ScanRequestInputDto newScanRequest) {
+       if(!scanRequestRepository.existsById(id)){
+           throw new RecordNotFoundException("Scan request "+id+" not found");
+       }
         ScanRequest s = scanRequestMapper.toScanRequest(newScanRequest);
         s.setId(id);
         ScanRequest savedScanRequest = scanRequestRepository.save(s);
