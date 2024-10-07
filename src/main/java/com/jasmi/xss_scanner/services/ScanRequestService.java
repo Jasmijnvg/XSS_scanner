@@ -37,7 +37,7 @@ public class ScanRequestService {
             return scanRequestMapper.toScanRequestDto(scanrequest);
         }
         else{
-            throw new RecordNotFoundException(id+" not found");
+            throw new RecordNotFoundException("Scan request "+id+" not found");
         }
     }
 
@@ -60,7 +60,7 @@ public class ScanRequestService {
             scanRequestRepository.deleteById(id);
         }
         else {
-            throw new RecordNotFoundException("scan request "+id+" not found");
+            throw new RecordNotFoundException("Scan request "+id+" not found");
         }
     }
 
