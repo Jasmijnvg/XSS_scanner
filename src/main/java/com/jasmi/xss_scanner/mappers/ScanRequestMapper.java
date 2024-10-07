@@ -17,8 +17,7 @@ public class ScanRequestMapper {
 
         return dto;
     }
-
-
+    
     public ScanRequest toScanRequest(ScanRequestInputDto dto){
         var scanRequest = new ScanRequest();
 

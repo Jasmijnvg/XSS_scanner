@@ -6,6 +6,7 @@ import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanRequestMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +46,22 @@ public class ScanRequestService {
         ScanRequest savedScanRequest = scanRequestRepository.save(sr);
         return scanRequestMapper.toScanRequestDto(savedScanRequest);
 
+    }
+
+    public ScanRequestOutputDto updateScanRequest(long id, ScanRequestInputDto newScanRequest) {
+        ScanRequest s = scanRequestMapper.toScanRequest(newScanRequest);
+        s.setId(id);
+        ScanRequest savedScanRequest = scanRequestRepository.save(s);
+        return scanRequestMapper.toScanRequestDto(savedScanRequest);
+    }
+
+    public void deleteScanRequest(long id) {
+        if (scanRequestRepository.existsById(id)) {
+            scanRequestRepository.deleteById(id);
+        }
+        else {
+            throw new RecordNotFoundException("scan request "+id+" not found");
+        }
     }
 
 }

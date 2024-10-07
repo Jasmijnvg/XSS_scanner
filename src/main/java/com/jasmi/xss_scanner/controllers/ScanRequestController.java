@@ -31,10 +31,23 @@ public class ScanRequestController {
     }
 
     @PostMapping()
-    public ResponseEntity<ScanRequestOutputDto> addScanRequest(@RequestBody ScanRequestInputDto scanRequest){
+    public ResponseEntity<ScanRequestOutputDto> addScanRequest(@RequestBody ScanRequestInputDto scanRequest) {
         ScanRequestOutputDto t = scanRequestService.saveScanRequest(scanRequest);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(t.getId()).toUri();
         return ResponseEntity.created(location).body(t);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateScanRequest(@PathVariable long id, @RequestBody ScanRequestInputDto scanRequest) {
+         scanRequestService.updateScanRequest(id, scanRequest);
+         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteScanRequest(@PathVariable long id) {
+        scanRequestService.deleteScanRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
