@@ -12,4 +12,7 @@ public class ScanResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @OneToOne(mappedBy = "scanResult")
+    ScanRequest scanRequest;
+
 }

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ScanRequest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long id;
@@ -18,9 +19,13 @@ public class ScanRequest {
     private String url;
 
     @CreationTimestamp
-    @Column(updatable = false) //Prevents the timestamp from being updated after creation
+    @Column(updatable = false)
     private LocalDateTime requestTimestamp;
 
     private byte Image;
+
+    @OneToOne
+    @JoinColumn(name="scan_result_id")
+    private ScanResult scanResult;
 
 }
