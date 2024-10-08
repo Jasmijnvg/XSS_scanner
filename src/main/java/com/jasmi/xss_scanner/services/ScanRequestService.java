@@ -5,6 +5,7 @@ import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanRequestMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
+import com.jasmi.xss_scanner.models.ScanResult;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -65,5 +66,7 @@ public class ScanRequestService {
             throw new RecordNotFoundException("Scan request "+id+" not found");
         }
     }
+
+    //Relationships
 
 }

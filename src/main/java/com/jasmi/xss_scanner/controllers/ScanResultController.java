@@ -26,7 +26,7 @@ public class ScanResultController {
     }
 
     @GetMapping("/scan_result/{id}")
-    public ResponseEntity<ScanResultOutputDto> getScanResult(@PathVariable Integer id) {
+    public ResponseEntity<ScanResultOutputDto> getScanResult(@PathVariable Long id) {
         return ResponseEntity.ok(scanResultService.getScanResultById(id));
     }
 
@@ -39,13 +39,13 @@ public class ScanResultController {
     }
 
     @PutMapping("/scan_result/{id}")
-    public ResponseEntity<Void> updateScanResult(@PathVariable Integer id, @RequestBody ScanResultInputDto scanResultInputDto) {
+    public ResponseEntity<Void> updateScanResult(@PathVariable Long id, @RequestBody ScanResultInputDto scanResultInputDto) {
         scanResultService.updateScanResult(id, scanResultInputDto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/scan_result/{id}")
-    public ResponseEntity<Void> deleteScanResult(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteScanResult(@PathVariable Long id) {
         scanResultService.deleteScanResult(id);
         return ResponseEntity.noContent().build();
     }

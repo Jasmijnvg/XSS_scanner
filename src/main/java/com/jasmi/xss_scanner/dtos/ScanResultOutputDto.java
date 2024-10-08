@@ -6,5 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ScanResultOutputDto {
-    private Integer id;
+    private Long id;
+
+    public ScanRequestOutputDto scanRequest;
 }

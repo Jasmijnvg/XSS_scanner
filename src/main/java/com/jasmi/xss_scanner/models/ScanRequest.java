@@ -24,8 +24,7 @@ public class ScanRequest {
 
     private byte Image;
 
-    @OneToOne
-    @JoinColumn(name="scan_result_id")
+    @OneToOne(mappedBy = "scanRequest")
     private ScanResult scanResult;
 
 }

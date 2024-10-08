@@ -10,9 +10,10 @@ import lombok.Setter;
 public class ScanResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @OneToOne(mappedBy = "scanResult")
+    @OneToOne
+    @JoinColumn(name="scan_request_id")
     ScanRequest scanRequest;
 
 }

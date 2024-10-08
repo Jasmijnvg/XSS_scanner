@@ -4,7 +4,9 @@ import com.jasmi.xss_scanner.dtos.ScanResultInputDto;
 import com.jasmi.xss_scanner.dtos.ScanResultOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanResultMapper;
+import com.jasmi.xss_scanner.models.ScanRequest;
 import com.jasmi.xss_scanner.models.ScanResult;
+import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import com.jasmi.xss_scanner.repositories.ScanResultRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +18,12 @@ import java.util.stream.Collectors;
 public class ScanResultService {
     private final ScanResultRepository scanResultRepository;
     private final ScanResultMapper scanResultMapper;
+    private final ScanRequestRepository scanRequestRepository;
 
-    public ScanResultService(ScanResultRepository scanResultRepository, ScanResultMapper scanResultMapper) {
+    public ScanResultService(ScanResultRepository scanResultRepository, ScanResultMapper scanResultMapper, ScanRequestRepository scanRequestRepository) {
         this.scanResultRepository = scanResultRepository;
         this.scanResultMapper = scanResultMapper;
+        this.scanRequestRepository = scanRequestRepository;
     }
 
     public List<ScanResultOutputDto> getAllScanResults() {
@@ -29,7 +33,7 @@ public class ScanResultService {
                 .collect(Collectors.toList());
     }
 
-    public ScanResultOutputDto getScanResultById(Integer id) {
+    public ScanResultOutputDto getScanResultById(Long id) {
         Optional<ScanResult> scanResult = scanResultRepository.findById(id);
         if (scanResult.isPresent()) {
             return scanResultMapper.toScanResultDto(scanResult.get());
@@ -44,7 +48,7 @@ public class ScanResultService {
         return scanResultMapper.toScanResultDto(savedScanResult);
     }
 
-    public ScanResultOutputDto updateScanResult(Integer id, ScanResultInputDto scanResultDto) {
+    public ScanResultOutputDto updateScanResult(Long id, ScanResultInputDto scanResultDto) {
         if (!scanResultRepository.existsById(id)) {
             throw new RecordNotFoundException("ScanResult " + id + " not found");
         }
@@ -54,11 +58,20 @@ public class ScanResultService {
         return scanResultMapper.toScanResultDto(updatedScanResult);
     }
 
-    public void deleteScanResult(Integer id) {
+    public void deleteScanResult(Long id) {
         if (scanResultRepository.existsById(id)) {
             scanResultRepository.deleteById(id);
         } else {
             throw new RecordNotFoundException("ScanResult " + id + " not found");
         }
+    }
+
+    //Relationships
+    public void assignScanRequestToScanResult(long scanResultId, long scanRequestId) {
+        ScanResult scanResult = scanResultRepository.findById(scanResultId).orElseThrow(() -> new RecordNotFoundException("ScanResult "+scanResultId+" not found"));
+        ScanRequest scanRequest= scanRequestRepository.findById(scanRequestId).orElseThrow(() -> new RecordNotFoundException("ScanRequest "+scanRequestId+" not found"));
+
+        scanRequest.setScanResult(scanResult);
+        scanRequestRepository.save(scanRequest);
     }
 }
