@@ -43,12 +43,26 @@ public class SolutionService {
         }
     }
 
-    public SolutionOutputDto saveSolution(SolutionInputDto solution) {
-        Solution s = solutionMapper.toSolution(solution);
-        Solution savedSolution = solutionRepository.save(s);
+//    public SolutionOutputDto saveSolution(SolutionInputDto solution) {
+//        Solution s = solutionMapper.toSolution(solution);
+//        Solution savedSolution = solutionRepository.save(s);
+//
+//        return solutionMapper.toSolutionDto(savedSolution);
+//    }
+
+    public SolutionOutputDto saveSolution(SolutionInputDto solutionDto) {
+        Vulnerability vulnerability = vulnerabilityRepository.findByName(solutionDto.getVulnerabilityType())
+                .orElseThrow(() -> new RecordNotFoundException("Vulnerability not found for type: " + solutionDto.getVulnerabilityType()));
+
+        Solution solution = solutionMapper.toSolution(solutionDto);
+
+        solution.setVulnerability(vulnerability);
+
+        Solution savedSolution = solutionRepository.save(solution);
 
         return solutionMapper.toSolutionDto(savedSolution);
     }
+
 
     public SolutionOutputDto updateSolution(long id, SolutionInputDto updatedSolution) {
         if (!solutionRepository.existsById(id)) {
