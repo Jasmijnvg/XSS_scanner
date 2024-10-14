@@ -6,8 +6,10 @@ import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanResultMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
 import com.jasmi.xss_scanner.models.ScanResult;
+import com.jasmi.xss_scanner.models.Vulnerability;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import com.jasmi.xss_scanner.repositories.ScanResultRepository;
+import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +21,13 @@ public class ScanResultService {
     private final ScanResultRepository scanResultRepository;
     private final ScanResultMapper scanResultMapper;
     private final ScanRequestRepository scanRequestRepository;
+    private final VulnerabilityRepository vulnerabilityRepository;
 
-    public ScanResultService(ScanResultRepository scanResultRepository, ScanResultMapper scanResultMapper, ScanRequestRepository scanRequestRepository) {
+    public ScanResultService(ScanResultRepository scanResultRepository, ScanResultMapper scanResultMapper, ScanRequestRepository scanRequestRepository, VulnerabilityRepository vulnerabilityRepository) {
         this.scanResultRepository = scanResultRepository;
         this.scanResultMapper = scanResultMapper;
         this.scanRequestRepository = scanRequestRepository;
+        this.vulnerabilityRepository = vulnerabilityRepository;
     }
 
     public List<ScanResultOutputDto> getAllScanResults() {
@@ -73,5 +77,13 @@ public class ScanResultService {
 
         scanRequest.setScanResult(scanResult);
         scanRequestRepository.save(scanRequest);
+    }
+
+    public void assignVulnerabilityToScanResult(long scanresultId, long vulnerabilityId) {
+        ScanResult scanResult = scanResultRepository.findById(scanresultId).orElseThrow(() -> new RecordNotFoundException("ScanResult "+scanresultId+" not found"));
+        Vulnerability vulnerability = vulnerabilityRepository.findById(vulnerabilityId).orElseThrow(() -> new RecordNotFoundException("Vulnerability "+vulnerabilityId+" not found"));
+
+        scanResult.getVulnerabilities().add(vulnerability);
+        vulnerabilityRepository.save(vulnerability);
     }
 }
