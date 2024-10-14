@@ -9,7 +9,6 @@ import com.jasmi.xss_scanner.models.ScanResult;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,6 +44,7 @@ public class ScanRequestService {
         ScanRequest scanRequest = scanRequestMapper.toScanRequest(scanRequestInputDto);
 
         ScanResult scanResult = new ScanResult();
+        scanResult.setScanRequest(scanRequest);
         scanRequest.setScanResult(scanResult);
 
         ScanRequest savedScanRequest = scanRequestRepository.save(scanRequest);

@@ -8,12 +8,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ScanResultMapper {
+    private final ScanRequestMapper scanRequestMapper;
+
+    public ScanResultMapper(ScanRequestMapper scanRequestMapper) {
+        this.scanRequestMapper = scanRequestMapper;
+    }
 
     public ScanResultOutputDto toScanResultDto(ScanResult scanResult) {
         var dto = new ScanResultOutputDto();
         dto.setId(scanResult.getId());
         if(scanResult.getScanRequest()!=null){
-            dto.setScanRequest(ScanRequestMapper.toScanRequestDto(scanResult.getScanRequest()));
+            dto.setScanRequest(scanRequestMapper.toScanRequestDto(scanResult.getScanRequest()));
         }
         return dto;
     }

@@ -16,8 +16,13 @@ public class Solution {
 
     private String vulnerabilityType;
     private String solution;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String implementationSteps;
 
-    @ElementCollection
-    private List<String> externalResourceLinks;
+    private String externalResourceLink;
+
+    @ManyToOne
+    @JoinColumn(name = "vulnerability_id")
+    private Vulnerability vulnerability;
 }

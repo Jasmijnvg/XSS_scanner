@@ -30,7 +30,7 @@ public class VulnerabiltyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<VulnerabilityOutputDto> getVulnerability(@PathVariable long id){
-        return ResponseEntity.ok(vulnerabilityService.getVulnarabilityById(id));
+        return ResponseEntity.ok(vulnerabilityService.getVulnerabilityById(id));
     }
 
     @PostMapping()

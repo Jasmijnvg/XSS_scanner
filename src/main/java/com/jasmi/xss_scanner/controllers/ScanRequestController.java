@@ -56,7 +56,7 @@ public class ScanRequestController {
     public ResponseEntity<String> getScanResult(@PathVariable long id) {
         ScanRequestOutputDto scanRequestDto = scanRequestService.getScanRequestById(id);
         if (scanRequestDto.getScanResult() != null) {
-            return ResponseEntity.ok(scanRequestDto.getScanResult().getResultData());
+            return ResponseEntity.ok(scanRequestDto.getScanResult().toString());//.getResultData());
         } else {
             return ResponseEntity.notFound().build();
         }

@@ -14,5 +14,5 @@ public class ScanRequestOutputDto {
     private LocalDateTime requestTimestamp;
     private byte[] Image;
 
-    private ScanResult scanResult;
+    private Long scanResult;
 }

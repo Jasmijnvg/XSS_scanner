@@ -30,13 +30,13 @@ public class ScanResultController {
         return ResponseEntity.ok(scanResultService.getScanResultById(id));
     }
 
-    @PostMapping("/scan_result")
-    public ResponseEntity<ScanResultOutputDto> addScanResult(@RequestBody ScanResultInputDto scanResultInputDto) {
-        ScanResultOutputDto savedScanResult = scanResultService.saveScanResult(scanResultInputDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(savedScanResult.getId()).toUri();
-        return ResponseEntity.created(location).body(savedScanResult);
-    }
+//    @PostMapping("/scan_result")
+//    public ResponseEntity<ScanResultOutputDto> addScanResult(@RequestBody ScanResultInputDto scanResultInputDto) {
+//        ScanResultOutputDto savedScanResult = scanResultService.saveScanResult(scanResultInputDto);
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+//                .buildAndExpand(savedScanResult.getId()).toUri();
+//        return ResponseEntity.created(location).body(savedScanResult);
+//    }
 
     @PutMapping("/scan_result/{id}")
     public ResponseEntity<Void> updateScanResult(@PathVariable Long id, @RequestBody ScanResultInputDto scanResultInputDto) {

@@ -5,7 +5,9 @@ import com.jasmi.xss_scanner.dtos.SolutionOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.SolutionMapper;
 import com.jasmi.xss_scanner.models.Solution;
+import com.jasmi.xss_scanner.models.Vulnerability;
 import com.jasmi.xss_scanner.repositories.SolutionRepository;
+import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,16 +18,18 @@ import java.util.stream.Collectors;
 public class SolutionService {
     private final SolutionRepository solutionRepository;
     private final SolutionMapper solutionMapper;
+    private final VulnerabilityRepository vulnerabilityRepository;
 
-    public SolutionService(SolutionRepository solutionRepository, SolutionMapper solutionMapper) {
+    public SolutionService(SolutionRepository solutionRepository, SolutionMapper solutionMapper, VulnerabilityRepository vulnerabilityRepository) {
         this.solutionRepository = solutionRepository;
         this.solutionMapper = solutionMapper;
+        this.vulnerabilityRepository = vulnerabilityRepository;
     }
 
     public List<SolutionOutputDto> getAllSolutions() {
         return solutionRepository.findAll()
                 .stream()
-                .map(solutionMapper::toSolutionDto) // Using method reference
+                .map(solutionMapper::toSolutionDto)
                 .collect(Collectors.toList());
     }
 
@@ -42,6 +46,7 @@ public class SolutionService {
     public SolutionOutputDto saveSolution(SolutionInputDto solution) {
         Solution s = solutionMapper.toSolution(solution);
         Solution savedSolution = solutionRepository.save(s);
+
         return solutionMapper.toSolutionDto(savedSolution);
     }
 
