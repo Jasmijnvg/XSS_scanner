@@ -22,9 +22,9 @@ public class ScanRequest {
     @Column(updatable = false)
     private LocalDateTime requestTimestamp;
 
-    private byte Image;
+    private byte[] Image;
 
-    @OneToOne(mappedBy = "scanRequest")
+    @OneToOne(mappedBy="scanRequest", cascade=CascadeType.ALL)
     private ScanResult scanResult;
 
 }

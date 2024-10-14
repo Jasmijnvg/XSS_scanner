@@ -49,4 +49,5 @@ public class ScanResultController {
         scanResultService.deleteScanResult(id);
         return ResponseEntity.noContent().build();
     }
+
 }

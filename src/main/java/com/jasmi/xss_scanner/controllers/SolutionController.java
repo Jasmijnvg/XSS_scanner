@@ -3,6 +3,7 @@ package com.jasmi.xss_scanner.controllers;
 import com.jasmi.xss_scanner.dtos.SolutionInputDto;
 import com.jasmi.xss_scanner.dtos.SolutionOutputDto;
 import com.jasmi.xss_scanner.services.SolutionService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,14 +32,14 @@ public class SolutionController {
     }
 
     @PostMapping()
-    public ResponseEntity<SolutionOutputDto> addSolution(@RequestBody SolutionInputDto solution) {
+    public ResponseEntity<SolutionOutputDto> addSolution(@Valid @RequestBody SolutionInputDto solution) {
         SolutionOutputDto s = solutionService.saveSolution(solution);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(s.getId()).toUri();
         return ResponseEntity.created(location).body(s);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateSolution(@PathVariable long id, @RequestBody SolutionInputDto solution) {
+    public ResponseEntity<Void> updateSolution(@Valid @PathVariable long id, @RequestBody SolutionInputDto solution) {
         solutionService.updateSolution(id, solution);
         return ResponseEntity.noContent().build();
     }

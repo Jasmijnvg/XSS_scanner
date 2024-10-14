@@ -5,6 +5,7 @@ import com.jasmi.xss_scanner.dtos.VulnerabilityInputDto;
 import com.jasmi.xss_scanner.dtos.VulnerabilityOutputDto;
 import com.jasmi.xss_scanner.models.Vulnerability;
 import com.jasmi.xss_scanner.services.VulnerabilityService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -33,14 +34,14 @@ public class VulnerabiltyController {
     }
 
     @PostMapping()
-    public ResponseEntity<VulnerabilityOutputDto> addVulnerability(@RequestBody VulnerabilityInputDto vulnerability) {
+    public ResponseEntity<VulnerabilityOutputDto> addVulnerability(@Valid @RequestBody VulnerabilityInputDto vulnerability) {
         VulnerabilityOutputDto v = vulnerabilityService.saveVulnerability(vulnerability);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(v.id).toUri();
         return ResponseEntity.created(location).body(v);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateVulnerability(@PathVariable long id, @RequestBody VulnerabilityInputDto vulnerability) {
+    public ResponseEntity<Void> updateVulnerability(@Valid @PathVariable long id, @RequestBody VulnerabilityInputDto vulnerability) {
         vulnerabilityService.updateVulnerability(id, vulnerability);
         return ResponseEntity.noContent().build();
     }
