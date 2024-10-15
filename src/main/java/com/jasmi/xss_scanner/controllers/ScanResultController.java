@@ -42,7 +42,7 @@ public class ScanResultController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{scanResultId}/vulnerabilities/{vulnerabilityId}")
+    @PutMapping("/scan_result/{scanResultId}/vulnerabilities/{vulnerabilityId}")
     public ResponseEntity<Void> assignVulnerabilityToScanResult(@PathVariable long scanResultId,@PathVariable long vulnerabilityId) {
         scanResultService.assignVulnerabilityToScanResult(scanResultId, vulnerabilityId);
         return ResponseEntity.noContent().build();
