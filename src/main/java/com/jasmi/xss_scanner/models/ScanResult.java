@@ -21,6 +21,9 @@ public class ScanResult {
     @JoinColumn(name="scan_request_id")
     private ScanRequest scanRequest;
 
-    @ManyToMany(mappedBy = "scanResults")
+    @ManyToMany
+    @JoinTable(name = "scan_result_vulnerability",
+            joinColumns = @JoinColumn(name = "scan_result_id"),
+            inverseJoinColumns = @JoinColumn(name = "vulnerability_id"))
     private List<Vulnerability> vulnerabilities = new ArrayList<>();
 }

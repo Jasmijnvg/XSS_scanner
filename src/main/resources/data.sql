@@ -35,9 +35,9 @@
 -- Vulnerabilities invoegen
 INSERT INTO public.vulnerability (name, description, code)
  VALUES
-     ('Basic XSS', 'A simple direct script injection into the page.', 'TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1 - TEST SCRIPT 1'),
-     ('Image Onerror', 'An XSS attack using the onerror attribute of an image tag.', 'test script 2'),
-     ('URL Parameter', 'An XSS where JavaScript is injected via a URL parameter.', 'Test script 3');
+     ('Basic XSS', 'A simple direct script injection into the page.', 'loginbox-darklayer'),
+     ('Image Onerror', 'An XSS attack using the onerror attribute of an image tag.', 'loginbox-darklayer'),
+     ('URL Parameter', 'An XSS where JavaScript is injected via a URL parameter.', '<a.*?href="javascript:.*?">.*?</a>');
 
 
 INSERT INTO public.solution (vulnerability_type, solution, implementation_steps, external_resource_link, vulnerability_id)
