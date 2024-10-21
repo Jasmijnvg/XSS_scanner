@@ -3,7 +3,9 @@ package com.jasmi.xss_scanner.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Nationalized;
 
+import java.sql.Clob;
 import java.util.List;
 
 @Entity
@@ -16,8 +18,12 @@ public class Solution {
 
     private String vulnerabilityType;
     private String solution;
+    @Column(columnDefinition="varchar(10000)")
     private String implementationSteps;
 
-    @ElementCollection
-    private List<String> externalResourceLinks;
+    private String externalResourceLink;
+
+    @ManyToOne
+    @JoinColumn(name = "vulnerability_id")
+    private Vulnerability vulnerability;
 }

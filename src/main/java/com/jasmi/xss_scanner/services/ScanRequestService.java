@@ -5,8 +5,8 @@ import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanRequestMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
+import com.jasmi.xss_scanner.models.ScanResult;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,47 +23,39 @@ public class ScanRequestService {
         this.scanRequestMapper = scanRequestMapper;
     }
 
-    public List<ScanRequestOutputDto> getAllScanRequests(){
+    public List<ScanRequestOutputDto> getAllScanRequests() {
         return scanRequestRepository.findAll()
                 .stream()
-                .map((scanRequest)-> scanRequestMapper.toScanRequestDto(scanRequest))
+                .map(scanRequest -> scanRequestMapper.toScanRequestDto(scanRequest))
                 .collect(Collectors.toList());
     }
 
-    public ScanRequestOutputDto getScanRequestById(long id){
+    public ScanRequestOutputDto getScanRequestById(long id) {
         Optional<ScanRequest> optionalScanRequest = scanRequestRepository.findById(id);
-        if(optionalScanRequest.isPresent()){
-            ScanRequest scanrequest = optionalScanRequest.get();
-            return scanRequestMapper.toScanRequestDto(scanrequest);
-        }
-        else{
-            throw new RecordNotFoundException("Scan request "+id+" not found");
+        if (optionalScanRequest.isPresent()) {
+            ScanRequest scanRequest = optionalScanRequest.get();
+            return scanRequestMapper.toScanRequestDto(scanRequest);
+        } else {
+            throw new RecordNotFoundException("Scan request " + id + " not found");
         }
     }
 
-    public ScanRequestOutputDto saveScanRequest(ScanRequestInputDto scanRequest) {
-        ScanRequest sr = scanRequestMapper.toScanRequest(scanRequest);
-        ScanRequest savedScanRequest = scanRequestRepository.save(sr);
-        return scanRequestMapper.toScanRequestDto(savedScanRequest);
-    }
+    public ScanRequestOutputDto saveScanRequest(ScanRequestInputDto scanRequestInputDto) {
+        ScanRequest scanRequest = scanRequestMapper.toScanRequest(scanRequestInputDto);
 
-    public ScanRequestOutputDto updateScanRequest(long id, ScanRequestInputDto newScanRequest) {
-       if(!scanRequestRepository.existsById(id)){
-           throw new RecordNotFoundException("Scan request "+id+" not found");
-       }
-        ScanRequest s = scanRequestMapper.toScanRequest(newScanRequest);
-        s.setId(id);
-        ScanRequest savedScanRequest = scanRequestRepository.save(s);
+        ScanResult scanResult = new ScanResult();
+        scanResult.setScanRequest(scanRequest);
+        scanRequest.setScanResult(scanResult);
+
+        ScanRequest savedScanRequest = scanRequestRepository.save(scanRequest);
         return scanRequestMapper.toScanRequestDto(savedScanRequest);
     }
 
     public void deleteScanRequest(long id) {
         if (scanRequestRepository.existsById(id)) {
             scanRequestRepository.deleteById(id);
-        }
-        else {
-            throw new RecordNotFoundException("Scan request "+id+" not found");
+        } else {
+            throw new RecordNotFoundException("Scan request " + id + " not found");
         }
     }
-
 }

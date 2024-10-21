@@ -7,13 +7,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ScanRequestMapper {
+
     public ScanRequestOutputDto toScanRequestDto(ScanRequest scanRequest){
         var dto = new ScanRequestOutputDto();
 
         dto.setId(scanRequest.getId());
         dto.setUrl(scanRequest.getUrl());
         dto.setRequestTimestamp(scanRequest.getRequestTimestamp());
-        dto.setUrl(scanRequest.getUrl());
+        dto.setImage(scanRequest.getImage());
+        dto.setScanResult(scanRequest.getScanResult().getId());
 
         return dto;
     }

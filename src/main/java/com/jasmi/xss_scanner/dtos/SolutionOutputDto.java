@@ -9,8 +9,9 @@ import java.util.List;
 @Setter
 public class SolutionOutputDto {
     private long id;
+    private long vulnerabilityId;
     private String vulnerabilityType;
     private String solution;
     private String implementationSteps;
-    private List<String> externalResourceLinks;
+    private String externalResourceLink;
 }

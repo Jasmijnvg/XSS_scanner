@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SolutionMapper {
+
     public SolutionOutputDto toSolutionDto(Solution solution) {
         var dto = new SolutionOutputDto();
 
@@ -14,7 +15,10 @@ public class SolutionMapper {
         dto.setVulnerabilityType(solution.getVulnerabilityType());
         dto.setSolution(solution.getSolution());
         dto.setImplementationSteps(solution.getImplementationSteps());
-        dto.setExternalResourceLinks(solution.getExternalResourceLinks());
+        dto.setExternalResourceLink(solution.getExternalResourceLink());
+        if (solution.getVulnerability() != null) {
+            dto.setVulnerabilityId(solution.getVulnerability().getId());
+        }
 
         return dto;
     }
@@ -25,7 +29,7 @@ public class SolutionMapper {
         solution.setVulnerabilityType(dto.getVulnerabilityType());
         solution.setSolution(dto.getSolution());
         solution.setImplementationSteps(dto.getImplementationSteps());
-        solution.setExternalResourceLinks(dto.getExternalResourceLinks());
+        solution.setExternalResourceLink(dto.getExternalResourceLink());
 
         return solution;
     }

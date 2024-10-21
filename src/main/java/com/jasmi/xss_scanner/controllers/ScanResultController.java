@@ -26,27 +26,26 @@ public class ScanResultController {
     }
 
     @GetMapping("/scan_result/{id}")
-    public ResponseEntity<ScanResultOutputDto> getScanResult(@PathVariable Integer id) {
+    public ResponseEntity<ScanResultOutputDto> getScanResult(@PathVariable Long id) {
         return ResponseEntity.ok(scanResultService.getScanResultById(id));
     }
 
-    @PostMapping("/scan_result")
-    public ResponseEntity<ScanResultOutputDto> addScanResult(@RequestBody ScanResultInputDto scanResultInputDto) {
-        ScanResultOutputDto savedScanResult = scanResultService.saveScanResult(scanResultInputDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(savedScanResult.getId()).toUri();
-        return ResponseEntity.created(location).body(savedScanResult);
-    }
-
     @PutMapping("/scan_result/{id}")
-    public ResponseEntity<Void> updateScanResult(@PathVariable Integer id, @RequestBody ScanResultInputDto scanResultInputDto) {
+    public ResponseEntity<Void> updateScanResult(@PathVariable Long id, @RequestBody ScanResultInputDto scanResultInputDto) {
         scanResultService.updateScanResult(id, scanResultInputDto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/scan_result/{id}")
-    public ResponseEntity<Void> deleteScanResult(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteScanResult(@PathVariable Long id) {
         scanResultService.deleteScanResult(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/scan_result/{scanResultId}/vulnerabilities/{vulnerabilityId}")
+    public ResponseEntity<Void> assignVulnerabilityToScanResult(@PathVariable long scanResultId,@PathVariable long vulnerabilityId) {
+        scanResultService.assignVulnerabilityToScanResult(scanResultId, vulnerabilityId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
