@@ -79,11 +79,12 @@ public class ScanResultService {
         scanRequestRepository.save(scanRequest);
     }
 
-    public void assignVulnerabilityToScanResult(long scanresultId, long vulnerabilityId) {
-        ScanResult scanResult = scanResultRepository.findById(scanresultId).orElseThrow(() -> new RecordNotFoundException("ScanResult "+scanresultId+" not found"));
+    public void assignVulnerabilityToScanResult(long scanResultId, long vulnerabilityId) {
+        ScanResult scanResult = scanResultRepository.findById(scanResultId).orElseThrow(() -> new RecordNotFoundException("ScanResult "+scanResultId+" not found"));
         Vulnerability vulnerability = vulnerabilityRepository.findById(vulnerabilityId).orElseThrow(() -> new RecordNotFoundException("Vulnerability "+vulnerabilityId+" not found"));
 
         scanResult.getVulnerabilities().add(vulnerability);
-        vulnerabilityRepository.save(vulnerability);
+        vulnerability.getScanResults().add(scanResult);
+        scanResultRepository.save(scanResult);
     }
 }
