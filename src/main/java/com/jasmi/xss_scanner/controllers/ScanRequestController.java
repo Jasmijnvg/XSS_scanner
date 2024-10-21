@@ -36,7 +36,7 @@ public class ScanRequestController {
     }
 
     @PostMapping()
-    public ResponseEntity<ScanRequestOutputDto> addScanRequest(@Valid @RequestBody ScanRequestInputDto scanRequest) throws IOException {
+    public ResponseEntity<ScanRequestOutputDto> addScanRequest(@Valid @RequestBody ScanRequestInputDto scanRequest) {
         ScanRequestOutputDto t = scanRequestService.saveScanRequest(scanRequest);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(t.getId()).toUri();
         return ResponseEntity.created(location).body(t);

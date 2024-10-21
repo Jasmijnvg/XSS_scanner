@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -83,7 +84,10 @@ public class ScanRequestService {
 
                 System.out.println("Checking for vulnerability pattern: " + vulnerableCodePattern); // test3
 
-                if (pageHtml.contains(vulnerableCodePattern)) {
+                Pattern pattern = Pattern.compile(vulnerableCodePattern, Pattern.DOTALL);
+                Matcher matcher = pattern.matcher(pageHtml);
+
+                if (matcher.find()) {
                     detectedVulnerabilities.add(vulnerability);
                     System.out.println("Detected vulnerability: " + vulnerableCodePattern); // test4
                 } else {
@@ -96,7 +100,7 @@ public class ScanRequestService {
             } else {
                 System.out.println("Detected vulnerabilities for URL: " + url);
                 for (Vulnerability v : detectedVulnerabilities) {
-                    System.out.println("- " + v.getCode());
+                    System.out.println("- " + v.getName());
                 }
             }
         } catch (IOException e) {
