@@ -6,10 +6,12 @@ import com.jasmi.xss_scanner.models.ScanRequest;
 import com.jasmi.xss_scanner.models.ScanResult;
 import com.jasmi.xss_scanner.services.ScanRequestService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -61,5 +63,15 @@ public class ScanRequestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+//    @PostMapping("/test-url")
+//    public ResponseEntity<String> testFetchHtml(@RequestBody ScanRequestInputDto scanRequestInputDto){
+//        try {
+//            String html = scanRequestService.fetchHtmlContect(scanRequestInputDto.getUrl());
+//            return ResponseEntity.ok(html);
+//        } catch (IOException e) {
+//            return ResponseEntity.status(400).body("Error fetching HTML content: "+ e.getMessage());
+//        }
+//    }
 
 }
