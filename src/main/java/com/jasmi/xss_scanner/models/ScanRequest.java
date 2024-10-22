@@ -22,7 +22,8 @@ public class ScanRequest {
     @Column(updatable = false)
     private LocalDateTime requestTimestamp;
 
-    private byte[] Image;
+    @Lob
+    private byte[] screenshot;
 
     @OneToOne(mappedBy="scanRequest", cascade=CascadeType.ALL)
     private ScanResult scanResult;

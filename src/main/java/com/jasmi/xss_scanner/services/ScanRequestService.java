@@ -73,25 +73,25 @@ public class ScanRequestService {
             Document doc = Jsoup.connect(url).get();
             String pageHtml = doc.html();
 
-            System.out.println("Scanned HTML: " + pageHtml); // test1
+//            System.out.println("Scanned HTML: " + pageHtml); // test1
 
             List<Vulnerability> allVulnerabilities = vulnerabilityRepository.findAll();
 
-            System.out.println("Available vulnerabilities: " + allVulnerabilities.size()); // test2
+//            System.out.println("Available vulnerabilities: " + allVulnerabilities.size()); // test2
 
             for (Vulnerability vulnerability : allVulnerabilities) {
                 String vulnerableCodePattern = vulnerability.getCode();
 
-                System.out.println("Checking for vulnerability pattern: " + vulnerableCodePattern); // test3
+//                System.out.println("Checking for vulnerability pattern: " + vulnerableCodePattern); // test3
 
                 Pattern pattern = Pattern.compile(vulnerableCodePattern, Pattern.DOTALL);
                 Matcher matcher = pattern.matcher(pageHtml);
 
                 if (matcher.find()) {
                     detectedVulnerabilities.add(vulnerability);
-                    System.out.println("Detected vulnerability: " + vulnerableCodePattern); // test4
+//                    System.out.println("Detected vulnerability: " + vulnerableCodePattern); // test4
                 } else {
-                    System.out.println("Pattern not found: " + vulnerableCodePattern); // test5
+//                    System.out.println("Pattern not found: " + vulnerableCodePattern); // test5
                 }
             }
 
@@ -117,5 +117,16 @@ public class ScanRequestService {
         } else {
             throw new RecordNotFoundException("Scan request " + id + " not found");
         }
+    }
+
+    public ScanRequestOutputDto assignScreenshotToScanRequest(byte[] screenshotData, Long id) {
+        ScanRequest scanRequest = scanRequestRepository.findById(id)
+                .orElseThrow(()-> new RecordNotFoundException("ScanRequest not found for id "+id));
+
+        scanRequest.setScreenshot(screenshotData);
+
+        scanRequestRepository.save(scanRequest);
+
+        return scanRequestMapper.toScanRequestDto(scanRequest);
     }
 }

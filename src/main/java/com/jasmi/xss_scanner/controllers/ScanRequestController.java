@@ -5,15 +5,19 @@ import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.models.ScanRequest;
 import com.jasmi.xss_scanner.models.ScanResult;
 import com.jasmi.xss_scanner.services.ScanRequestService;
+import jakarta.servlet.Servlet;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/xss_scanner_api/scanrequest")
@@ -42,11 +46,22 @@ public class ScanRequestController {
         return ResponseEntity.created(location).body(t);
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Void> updateScanRequest(@PathVariable long id, @RequestBody ScanRequestInputDto scanRequest) {
-//         scanRequestService.updateScanRequest(id, scanRequest);
-//         return ResponseEntity.noContent().build();
-//    }
+    @PostMapping("/{id}/screenshot")
+    public ResponseEntity<ScanRequestOutputDto> addScreenshotToScanRequest(@PathVariable("id") Long id,
+                                                                          @RequestParam("file") MultipartFile file) {
+        try {
+            byte[] screenshotData = file.getBytes();
+            ScanRequestOutputDto scanRequest = scanRequestService.assignScreenshotToScanRequest(screenshotData, id);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("{id}/screenshot")
+                    .buildAndExpand(scanRequest.getId())
+                    .toUri();
+            return ResponseEntity.created(location).body(scanRequest);
+        }
+        catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteScanRequest(@PathVariable long id) {
@@ -63,15 +78,5 @@ public class ScanRequestController {
             return ResponseEntity.notFound().build();
         }
     }
-
-//    @PostMapping("/test-url")
-//    public ResponseEntity<String> testFetchHtml(@RequestBody ScanRequestInputDto scanRequestInputDto){
-//        try {
-//            String html = scanRequestService.fetchHtmlContect(scanRequestInputDto.getUrl());
-//            return ResponseEntity.ok(html);
-//        } catch (IOException e) {
-//            return ResponseEntity.status(400).body("Error fetching HTML content: "+ e.getMessage());
-//        }
-//    }
 
 }

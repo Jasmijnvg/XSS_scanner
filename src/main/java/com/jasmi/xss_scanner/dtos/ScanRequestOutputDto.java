@@ -12,7 +12,7 @@ public class ScanRequestOutputDto {
     public long id;
     private String url;
     private LocalDateTime requestTimestamp;
-    private byte[] Image;
+    private byte[] screenshot;
 
     private Long scanResult;
 }

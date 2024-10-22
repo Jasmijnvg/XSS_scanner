@@ -12,5 +12,5 @@ public class ScanRequestInputDto {
     @NotNull(message = "url may not be empty")
     private String url;
     private LocalDateTime requestTimestamp;
-    private byte[] Image;
+    private byte[] screenshot;
 }
