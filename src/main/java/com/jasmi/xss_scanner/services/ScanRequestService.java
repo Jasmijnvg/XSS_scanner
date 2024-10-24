@@ -1,5 +1,6 @@
 package com.jasmi.xss_scanner.services;
 
+import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import com.jasmi.xss_scanner.dtos.ScanRequestInputDto;
 import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
@@ -53,6 +54,15 @@ public class ScanRequestService {
 
     public ScanRequestOutputDto saveScanRequest(ScanRequestInputDto scanRequestInputDto) {
         ScanRequest scanRequest = scanRequestMapper.toScanRequest(scanRequestInputDto);
+        ScanResult scanResult = performScanAndCreateResult(scanRequest);
+        scanRequest.setScanResult(scanResult);
+
+        ScanRequest savedScanRequest = scanRequestRepository.save(scanRequest);
+
+        return scanRequestMapper.toScanRequestDto(savedScanRequest);
+    }
+
+    private ScanResult performScanAndCreateResult(ScanRequest scanRequest) {
 
         List<Vulnerability> detectedVulnerabilities = scanUrl((scanRequest.getUrl()));
 
@@ -60,56 +70,60 @@ public class ScanRequestService {
         scanResult.setScanRequest(scanRequest);
         scanResult.setVulnerabilities(detectedVulnerabilities);
 
-        scanRequest.setScanResult(scanResult);
-
-        ScanRequest savedScanRequest = scanRequestRepository.save(scanRequest);
-        return scanRequestMapper.toScanRequestDto(savedScanRequest);
+        return scanResult;
     }
 
     private List<Vulnerability> scanUrl(String url) {
         List<Vulnerability> detectedVulnerabilities = new ArrayList<>();
 
-        try {
-            Document doc = Jsoup.connect(url).get();
-            String pageHtml = doc.html();
-
-//            System.out.println("Scanned HTML: " + pageHtml); // test1
-
-            List<Vulnerability> allVulnerabilities = vulnerabilityRepository.findAll();
-
-//            System.out.println("Available vulnerabilities: " + allVulnerabilities.size()); // test2
-
-            for (Vulnerability vulnerability : allVulnerabilities) {
-                String vulnerableCodePattern = vulnerability.getCode();
-
-//                System.out.println("Checking for vulnerability pattern: " + vulnerableCodePattern); // test3
-
-                Pattern pattern = Pattern.compile(vulnerableCodePattern, Pattern.DOTALL);
-                Matcher matcher = pattern.matcher(pageHtml);
-
-                if (matcher.find()) {
-                    detectedVulnerabilities.add(vulnerability);
-//                    System.out.println("Detected vulnerability: " + vulnerableCodePattern); // test4
-                } else {
-//                    System.out.println("Pattern not found: " + vulnerableCodePattern); // test5
-                }
-            }
-
-            if (detectedVulnerabilities.isEmpty()) {
-                System.out.println("No vulnerabilities found for URL: " + url);
-            } else {
-                System.out.println("Detected vulnerabilities for URL: " + url);
-                for (Vulnerability v : detectedVulnerabilities) {
-                    System.out.println("- " + v.getName());
-                }
+        try{
+            String pageHtml = getPageHtml(url);
+            if (pageHtml != null) {
+                List<Vulnerability> allVulnerabilities = vulnerabilityRepository.findAll();
+                detectedVulnerabilities = findVulnerabilities(pageHtml, allVulnerabilities);
+                logResults(url, detectedVulnerabilities);
             }
         } catch (IOException e) {
-            System.err.println("Error fetching URL: " + e.getMessage());
+            System.out.println("error fetching URL: " + e.getMessage());
         }
 
         return detectedVulnerabilities;
     }
 
+    private String getPageHtml(String url) throws IOException {
+        Document doc = Jsoup.connect(url).get();
+        return doc.html();
+    }
+
+    private List<Vulnerability> findVulnerabilities(String pageHtml, List<Vulnerability> allVulnerabilities){
+        List<Vulnerability> detectedVulnerabilities = new ArrayList<>();
+
+        for (Vulnerability vulnerability : allVulnerabilities) {
+            if (checkVulnerability(pageHtml, vulnerability.getCode())) {
+                detectedVulnerabilities.add(vulnerability);
+            }
+        }
+
+        return detectedVulnerabilities;
+    }
+
+    private boolean checkVulnerability(String pageHtml, String vulnerableCodePattern){
+        Pattern pattern = Pattern.compile(vulnerableCodePattern, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(pageHtml);
+
+        return matcher.find();
+    }
+
+    private void logResults(String url, List<Vulnerability> detectedVulnerabilities){
+        if (detectedVulnerabilities.isEmpty()) {
+            System.out.println("No vulnerabilities found for URL: " + url);
+        } else {
+            System.out.println("Detected vulnerabilities for URL: " + url);
+            for (Vulnerability v : detectedVulnerabilities) {
+                System.out.println("- " + v.getName());
+            }
+        }
+    }
 
     public void deleteScanRequest(long id) {
         if (scanRequestRepository.existsById(id)) {
