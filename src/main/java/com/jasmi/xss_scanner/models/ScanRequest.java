@@ -24,6 +24,8 @@ public class ScanRequest {
 
     @Lob
     private byte[] screenshot;
+    private String screenshotFilename;
+    private String screenshotFileType;
 
     @OneToOne(mappedBy="scanRequest", cascade=CascadeType.ALL)
     private ScanResult scanResult;

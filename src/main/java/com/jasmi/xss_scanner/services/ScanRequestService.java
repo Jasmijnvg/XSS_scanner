@@ -119,11 +119,13 @@ public class ScanRequestService {
         }
     }
 
-    public ScanRequestOutputDto assignScreenshotToScanRequest(byte[] screenshotData, Long id) {
+    public ScanRequestOutputDto addScreenshotToScanRequest(byte[] screenshot, String fileName, String fileType, Long id) {
         ScanRequest scanRequest = scanRequestRepository.findById(id)
                 .orElseThrow(()-> new RecordNotFoundException("ScanRequest not found for id "+id));
 
-        scanRequest.setScreenshot(screenshotData);
+        scanRequest.setScreenshot(screenshot);
+        scanRequest.setScreenshotFilename(fileName);
+        scanRequest.setScreenshotFileType(fileType);
 
         scanRequestRepository.save(scanRequest);
 

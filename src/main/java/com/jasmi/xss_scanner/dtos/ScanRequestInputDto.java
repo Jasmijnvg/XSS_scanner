@@ -13,4 +13,6 @@ public class ScanRequestInputDto {
     private String url;
     private LocalDateTime requestTimestamp;
     private byte[] screenshot;
+    private String screenshotFileName;
+    private String screenshotFileType;
 }

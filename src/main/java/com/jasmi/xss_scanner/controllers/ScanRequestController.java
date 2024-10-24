@@ -48,19 +48,21 @@ public class ScanRequestController {
 
     @PostMapping("/{id}/screenshot")
     public ResponseEntity<ScanRequestOutputDto> addScreenshotToScanRequest(@PathVariable("id") Long id,
-                                                                          @RequestParam("file") MultipartFile file) {
-        try {
-            byte[] screenshotData = file.getBytes();
-            ScanRequestOutputDto scanRequest = scanRequestService.assignScreenshotToScanRequest(screenshotData, id);
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("{id}/screenshot")
-                    .buildAndExpand(scanRequest.getId())
-                    .toUri();
-            return ResponseEntity.created(location).body(scanRequest);
-        }
-        catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+                                                                          @RequestParam("file") MultipartFile file) throws IOException {
+
+        ScanRequestOutputDto t = scanRequestService.getScanRequestById(id);
+
+        String fileName = file.getOriginalFilename();
+        String contentType = file.getContentType();
+        byte[] screenshot = file.getBytes();
+
+        ScanRequestOutputDto scanRequest = scanRequestService.addScreenshotToScanRequest(screenshot, fileName, contentType, id);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("{id}/screenshot")
+                .buildAndExpand(scanRequest.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(scanRequest);
     }
 
     @DeleteMapping("/{id}")
