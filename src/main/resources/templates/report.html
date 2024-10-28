@@ -1,0 +1,28 @@
+<!-- src/main/resources/templates/report.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Report</title>
+</head>
+<body>
+<h1>Scan Report</h1>
+
+<div>
+    <h2>Scan Result ID: ${report.id}</h2>
+    <p>URL: ${report.url}</p>
+    <p>Timestamp: ${report.requestTimestamp}</p>
+
+    <h3>Vulnerabilities</h3>
+    <ul>
+        <th:block th:each="vulnerability : ${report.vulnerabilities}">
+            <li>
+                <strong th:text="${vulnerability.name}">Vulnerability Name</strong> -
+                <span th:text="${vulnerability.description}">Description</span>
+            </li>
+        </th:block>
+    </ul>
+</div>
+</body>
+</html>
