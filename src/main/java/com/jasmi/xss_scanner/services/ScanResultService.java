@@ -97,11 +97,21 @@ public class ScanResultService {
         ScanRequest scanRequest = scanRequestRepository.findById(dto.getId())
                 .orElseThrow(() -> new RecordNotFoundException("ScanRequest "+dto.getId()+" not found"));
 
-        String screenshotUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/xss_scanner_api/scanrequest/"+scanRequest.getId()+"/screenshot")
-                .toUriString();
+        if (hasScreenshot(scanRequest.getId())) {
+            String screenshotUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/xss_scanner_api/scanrequest/" + scanRequest.getId() + "/screenshot")
+                    .toUriString();
+            dto.setScreenshotUrl(screenshotUrl);
+        }
+        else {
+            dto.setScreenshotUrl("No screenshot uploaded");
+        }
+    }
 
-        dto.setScreenshotUrl(screenshotUrl);
+    private boolean hasScreenshot(Long scanRequestId) {
+        return scanRequestRepository.findById(scanRequestId)
+                .map(scanRequest -> scanRequest.getScreenshot() != null && scanRequest.getScreenshot().length > 0)
+                .orElse(false);
     }
 
 }
