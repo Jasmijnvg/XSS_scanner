@@ -14,7 +14,6 @@ public class ScanRequestMapper {
         dto.setId(scanRequest.getId());
         dto.setUrl(scanRequest.getUrl());
         dto.setRequestTimestamp(scanRequest.getRequestTimestamp());
-//        dto.setScreenshot(scanRequest.getScreenshot());
         dto.setScreenshotFileName(scanRequest.getScreenshotFilename());
         dto.setScreenshotFileType(scanRequest.getScreenshotFileType());
         dto.setScanResult(scanRequest.getScanResult().getId());
@@ -27,7 +26,6 @@ public class ScanRequestMapper {
 
         scanRequest.setUrl(dto.getUrl());
         scanRequest.setRequestTimestamp(dto.getRequestTimestamp());
-//        scanRequest.setScreenshot(dto.getScreenshot());
         scanRequest.setScreenshotFilename(dto.getScreenshotFileName());
         scanRequest.setScreenshotFileType(dto.getScreenshotFileType());
 

@@ -10,8 +10,13 @@ import com.jasmi.xss_scanner.models.Vulnerability;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import com.jasmi.xss_scanner.repositories.ScanResultRepository;
 import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,21 +75,18 @@ public class ScanResultService {
         }
     }
 
-    //Relationships
-    public void assignScanRequestToScanResult(long scanResultId, long scanRequestId) {
-        ScanResult scanResult = scanResultRepository.findById(scanResultId).orElseThrow(() -> new RecordNotFoundException("ScanResult "+scanResultId+" not found"));
-        ScanRequest scanRequest= scanRequestRepository.findById(scanRequestId).orElseThrow(() -> new RecordNotFoundException("ScanRequest "+scanRequestId+" not found"));
-
-        scanRequest.setScanResult(scanResult);
-        scanRequestRepository.save(scanRequest);
-    }
-
     public void assignVulnerabilityToScanResult(long scanResultId, long vulnerabilityId) {
-        ScanResult scanResult = scanResultRepository.findById(scanResultId).orElseThrow(() -> new RecordNotFoundException("ScanResult "+scanResultId+" not found"));
+        ScanResult scanResult = scanResultRepository.findById(scanResultId).orElseThrow(() -> new RecordNotFoundException("Scan result "+scanResultId+" not found"));
         Vulnerability vulnerability = vulnerabilityRepository.findById(vulnerabilityId).orElseThrow(() -> new RecordNotFoundException("Vulnerability "+vulnerabilityId+" not found"));
 
         scanResult.getVulnerabilities().add(vulnerability);
         vulnerability.getScanResults().add(scanResult);
         scanResultRepository.save(scanResult);
     }
+
+    public ScanResult getScanResult(Long scanResultId) {
+        return scanResultRepository.findById(scanResultId)
+                .orElseThrow(() -> new RecordNotFoundException("Scan result with id " + scanResultId + " not found"));
+    }
+
 }

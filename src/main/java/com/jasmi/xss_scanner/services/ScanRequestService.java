@@ -1,6 +1,5 @@
 package com.jasmi.xss_scanner.services;
 
-import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import com.jasmi.xss_scanner.dtos.ScanRequestInputDto;
 import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
@@ -144,5 +143,13 @@ public class ScanRequestService {
         scanRequestRepository.save(scanRequest);
 
         return scanRequestMapper.toScanRequestDto(scanRequest);
+    }
+
+    public byte[] getScreenshotById(Long id) {
+        Optional<ScanRequest> optionalScanRequest = scanRequestRepository.findById(id);
+        if(optionalScanRequest.isEmpty()){
+            throw new RecordNotFoundException("Scanrequest "+id+" not found");
+        }
+        return optionalScanRequest.get().getScreenshot();
     }
 }

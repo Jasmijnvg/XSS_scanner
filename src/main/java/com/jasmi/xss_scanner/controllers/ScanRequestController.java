@@ -8,12 +8,12 @@ import com.jasmi.xss_scanner.services.ScanRequestService;
 import jakarta.servlet.Servlet;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.print.attribute.standard.Media;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -42,7 +42,11 @@ public class ScanRequestController {
     @PostMapping()
     public ResponseEntity<ScanRequestOutputDto> addScanRequest(@Valid @RequestBody ScanRequestInputDto scanRequest) {
         ScanRequestOutputDto t = scanRequestService.saveScanRequest(scanRequest);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(t.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(t.getId())
+                .toUri();
+
         return ResponseEntity.created(location).body(t);
     }
 
@@ -50,19 +54,41 @@ public class ScanRequestController {
     public ResponseEntity<ScanRequestOutputDto> addScreenshotToScanRequest(@PathVariable("id") Long id,
                                                                           @RequestParam("file") MultipartFile file) throws IOException {
 
-        ScanRequestOutputDto t = scanRequestService.getScanRequestById(id);
-
         String fileName = file.getOriginalFilename();
         String contentType = file.getContentType();
         byte[] screenshot = file.getBytes();
 
         ScanRequestOutputDto scanRequest = scanRequestService.addScreenshotToScanRequest(screenshot, fileName, contentType, id);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("{id}/screenshot")
                 .buildAndExpand(scanRequest.getId())
                 .toUri();
 
         return ResponseEntity.created(location).body(scanRequest);
+    }
+
+    @GetMapping("/{id}/screenshot")
+    public ResponseEntity<byte[]> getScanRequestScreenshot(@PathVariable("id") Long id) {
+
+        byte[] screenshot = scanRequestService.getScreenshotById(id);
+
+        if(screenshot == null || screenshot.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ScanRequestOutputDto scanRequest = scanRequestService.getScanRequestById(id);
+
+        MediaType mediaType;
+        try {
+            mediaType = MediaType.parseMediaType(scanRequest.getScreenshotFileType());
+        } catch (InvalidMediaTypeException ignore){
+            mediaType = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        return ResponseEntity
+                .ok()
+                .contentType(mediaType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + scanRequest.getScreenshotFileName())
+                .body(screenshot);
     }
 
     @DeleteMapping("/{id}")

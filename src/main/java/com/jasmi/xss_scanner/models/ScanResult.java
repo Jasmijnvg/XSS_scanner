@@ -15,8 +15,6 @@ public class ScanResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String resultData;
-
     @OneToOne
     @JoinColumn(name="scan_request_id")
     private ScanRequest scanRequest;
