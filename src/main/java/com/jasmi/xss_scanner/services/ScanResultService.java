@@ -13,6 +13,7 @@ import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,13 +40,16 @@ public class ScanResultService {
         return scanResultRepository.findAll()
                 .stream()
                 .map(scanResultMapper::toScanResultDto)
+                .peek(this::addScreenshotUrlToScanResult)
                 .collect(Collectors.toList());
     }
 
     public ScanResultOutputDto getScanResultById(Long id) {
         Optional<ScanResult> scanResult = scanResultRepository.findById(id);
         if (scanResult.isPresent()) {
-            return scanResultMapper.toScanResultDto(scanResult.get());
+            ScanResultOutputDto dto = scanResultMapper.toScanResultDto(scanResult.get());
+            addScreenshotUrlToScanResult(dto);
+            return dto;
         } else {
             throw new RecordNotFoundException("ScanResult " + id + " not found");
         }
@@ -62,7 +66,7 @@ public class ScanResultService {
             throw new RecordNotFoundException("ScanResult " + id + " not found");
         }
         ScanResult scanResult = scanResultMapper.toScanResult(scanResultDto);
-        scanResult.setId(id);  // Ensure the ID is set
+        scanResult.setId(id);
         ScanResult updatedScanResult = scanResultRepository.save(scanResult);
         return scanResultMapper.toScanResultDto(updatedScanResult);
     }
@@ -87,6 +91,17 @@ public class ScanResultService {
     public ScanResult getScanResult(Long scanResultId) {
         return scanResultRepository.findById(scanResultId)
                 .orElseThrow(() -> new RecordNotFoundException("Scan result with id " + scanResultId + " not found"));
+    }
+
+    private void addScreenshotUrlToScanResult(ScanResultOutputDto dto) {
+        ScanRequest scanRequest = scanRequestRepository.findById(dto.getId())
+                .orElseThrow(() -> new RecordNotFoundException("ScanRequest "+dto.getId()+" not found"));
+
+        String screenshotUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/xss_scanner_api/scanrequest/"+scanRequest.getId()+"/screenshot")
+                .toUriString();
+
+        dto.setScreenshotUrl(screenshotUrl);
     }
 
 }

@@ -68,7 +68,6 @@ public class ScanRequestController {
 
     @GetMapping("/{id}/screenshot")
     public ResponseEntity<byte[]> getScanRequestScreenshot(@PathVariable("id") Long id) {
-
         byte[] screenshot = scanRequestService.getScreenshotById(id);
 
         if(screenshot == null || screenshot.length == 0) {

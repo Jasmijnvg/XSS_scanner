@@ -3,6 +3,7 @@ package com.jasmi.xss_scanner.dtos;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -10,7 +11,9 @@ import java.util.List;
 public class ScanResultOutputDto {
     private Long id;
 
-    public ScanRequestOutputDto scanRequest;
+    private String scannedUrl;
+    private LocalDateTime scanDate;
+    private String screenshotUrl;
     private List<VulnerabilityOutputDto> vulnerabilities;
 
 }
