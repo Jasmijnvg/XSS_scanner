@@ -25,13 +25,11 @@ public class ScanRequestService {
     private final ScanRequestRepository scanRequestRepository;
     private final ScanRequestMapper scanRequestMapper;
     private final VulnerabilityRepository vulnerabilityRepository;
-    private final ScanResultRepository scanResultRepository;
 
     public ScanRequestService(ScanRequestRepository scanRequestRepository, ScanRequestMapper scanRequestMapper, VulnerabilityRepository vulnerabilityRepository, ScanResultRepository scanResultRepository) {
         this.scanRequestRepository = scanRequestRepository;
         this.scanRequestMapper = scanRequestMapper;
         this.vulnerabilityRepository = vulnerabilityRepository;
-        this.scanResultRepository = scanResultRepository;
     }
 
     public List<ScanRequestOutputDto> getAllScanRequests() {
