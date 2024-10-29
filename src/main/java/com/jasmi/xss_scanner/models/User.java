@@ -13,8 +13,10 @@ public class User {
     public long id;
     private String userName;
     private String password;
+    private Boolean enabled = true;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role roleName;
+    private Role role;
+
 }

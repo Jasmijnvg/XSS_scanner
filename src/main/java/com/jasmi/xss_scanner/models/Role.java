@@ -15,10 +15,12 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long id;
     private String roleName;
+    private boolean active;
+
     @ElementCollection
     private List<String> permissions = new ArrayList<>();
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
 }

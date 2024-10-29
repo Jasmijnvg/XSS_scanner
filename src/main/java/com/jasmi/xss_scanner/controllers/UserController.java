@@ -30,12 +30,12 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     public ResponseEntity<UserOutputDto> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(UserService.getUserById);
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserOutputDto>> getUsers() {
-        return ResponseEntity.ok(UserService.getUsers);
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @PutMapping("/user/{id}")
