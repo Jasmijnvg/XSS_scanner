@@ -12,7 +12,8 @@ public class ScanRequestOutputDto {
     public long id;
     private String url;
     private LocalDateTime requestTimestamp;
-    private byte[] Image;
+    private String screenshotFileName;
+    private String screenshotFileType;
 
     private Long scanResult;
 }

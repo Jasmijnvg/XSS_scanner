@@ -21,9 +21,11 @@ public class ScanResultMapper {
 
     public ScanResultOutputDto toScanResultDto(ScanResult scanResult) {
         var dto = new ScanResultOutputDto();
+
         dto.setId(scanResult.getId());
         if(scanResult.getScanRequest()!=null){
-            dto.setScanRequest(scanRequestMapper.toScanRequestDto(scanResult.getScanRequest()));
+            dto.setScannedUrl(scanResult.getScanRequest().getUrl());
+            dto.setScanDate(scanResult.getScanRequest().getRequestTimestamp());
         }
         if(scanResult.getVulnerabilities()!=null){
             dto.setVulnerabilities(
