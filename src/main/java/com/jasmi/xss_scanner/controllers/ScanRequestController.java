@@ -1,7 +1,7 @@
 package com.jasmi.xss_scanner.controllers;
 
-import com.jasmi.xss_scanner.dtos.ScanRequestInputDto;
-import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
+import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestInputDto;
+import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.services.ScanRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;

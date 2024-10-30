@@ -1,13 +1,11 @@
 package com.jasmi.xss_scanner.controllers;
 
-import com.jasmi.xss_scanner.dtos.ScanResultInputDto;
-import com.jasmi.xss_scanner.dtos.ScanResultOutputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultInputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultOutputDto;
 import com.jasmi.xss_scanner.services.ScanResultService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController

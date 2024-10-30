@@ -8,23 +8,19 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
+@Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-    private final UserDetailsService userDetailsService;
 
     private final JwtService jwtService;
 
-    public JwtRequestFilter(JwtService jwtService, UserDetailsService udService) {
+    public JwtRequestFilter(JwtService jwtService) {
         this.jwtService = jwtService;
-        this.userDetailsService = udService;
     }
 
     @Override
@@ -59,12 +55,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private void setAuthentication(String username, List<GrantedAuthority> roles,
                                    HttpServletRequest request, String jwt) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(username, null, roles);
 
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        ApiUserDetails userDetails = new ApiUserDetails(username, jwtService.extractRoles(jwt));
+        authenticationToken.setDetails(userDetails);
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }

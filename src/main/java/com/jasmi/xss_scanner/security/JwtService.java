@@ -25,10 +25,6 @@ public class JwtService {
     private String AUDIENCE;
 
     private String ROLES_CLAIMS_NAME = "roles";
-    private String ORGANISATION = "organisation";
-
-    @Value("${jwt.Organisation_Name}")
-    private String ORGANISATION_NAME;
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -45,14 +41,14 @@ public class JwtService {
     public List<String> extractRoles(String token) {
         final Claims claims = extractAllClaims(token);
         List<String> roles = claims.get(ROLES_CLAIMS_NAME, List.class);
-        if (roles == null) return Collections.emptyList(); // Geen rollen gevonden, retourneer lege lijst
+        if (roles == null) return Collections.emptyList();
         return roles;
     }
 
     public List<GrantedAuthority> extractSimpleGrantedAuthorities(String token) {
 
         List<String> roles = extractRoles(token);
-        if (roles == null) return Collections.emptyList(); // Geen rollen gevonden, retourneer lege lijst
+        if (roles == null) return Collections.emptyList();
         return GetAsListSimpleGrantedAuthorities(roles);
     }
 
@@ -90,7 +86,6 @@ public class JwtService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         claims.put(ROLES_CLAIMS_NAME, roles);
-        claims.put(ORGANISATION, ORGANISATION_NAME );
         return createToken(claims, userDetails.getUsername(), milliSeconds); //time in milliseconds
     }
 
@@ -120,10 +115,5 @@ public class JwtService {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
-    }
-
-    public String extractOrganisation(String token) {
-        final Claims claims = extractAllClaims(token);
-        return claims.get(ORGANISATION, String.class);
     }
 }

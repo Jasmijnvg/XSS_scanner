@@ -1,9 +1,7 @@
-package com.jasmi.xss_scanner.dtos;
+package com.jasmi.xss_scanner.dtos.solution;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter

@@ -1,4 +1,4 @@
-package com.jasmi.xss_scanner.dtos;
+package com.jasmi.xss_scanner.dtos.scanrequest;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

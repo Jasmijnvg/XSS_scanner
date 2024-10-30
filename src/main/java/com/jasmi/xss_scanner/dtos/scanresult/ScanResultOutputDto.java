@@ -1,5 +1,6 @@
-package com.jasmi.xss_scanner.dtos;
+package com.jasmi.xss_scanner.dtos.scanresult;
 
+import com.jasmi.xss_scanner.dtos.vulnerability.VulnerabilityOutputDto;
 import lombok.Getter;
 import lombok.Setter;
 

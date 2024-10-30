@@ -1,7 +1,7 @@
 package com.jasmi.xss_scanner.services;
 
-import com.jasmi.xss_scanner.dtos.ScanResultInputDto;
-import com.jasmi.xss_scanner.dtos.ScanResultOutputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultInputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanResultMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;

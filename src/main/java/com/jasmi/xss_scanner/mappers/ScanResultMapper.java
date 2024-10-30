@@ -1,10 +1,8 @@
 package com.jasmi.xss_scanner.mappers;
 
-import com.jasmi.xss_scanner.dtos.ScanResultInputDto;
-import com.jasmi.xss_scanner.dtos.ScanResultOutputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultInputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultOutputDto;
 import com.jasmi.xss_scanner.models.ScanResult;
-import com.jasmi.xss_scanner.services.ScanRequestService;
-import com.jasmi.xss_scanner.services.VulnerabilityService;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;

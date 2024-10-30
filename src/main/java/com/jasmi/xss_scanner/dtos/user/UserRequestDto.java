@@ -13,5 +13,5 @@ public class UserRequestDto {
     @NotBlank(message = "password is required")
     private String password;
     @NotEmpty(message = "role is required")
-    private String role;
+    private String[] roles;
 }

@@ -8,15 +8,22 @@ import com.jasmi.xss_scanner.models.User;
 import com.jasmi.xss_scanner.models.Role;
 import com.jasmi.xss_scanner.repositories.UserRepository;
 import com.jasmi.xss_scanner.repositories.RoleRepository;
+import com.jasmi.xss_scanner.security.ApiUserDetails;
+import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -30,15 +37,62 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void registerUser(UserInputDto userInputDto) {
-        User user = UserMapper.toUser(userInputDto);
+//    public UserOutputDto createNewUser(UserInputDto newUser, List<String> roles) {
+//        List<Role> validRoles = new ArrayList<>();
+//
+//        for (String roleName : roles) {
+//            Optional<Role> optionalRole = roleRepository.findByRoleName(roleName);
+//            optionalRole.ifPresent(validRoles::add);
+//        }
+//
+//        var user = userMapper.toUser(newUser);
+//
+//        for (Role role : validRoles) {
+//            user.getRoles().add(role);
+//        }
+//
+//        updateRoleUser(user);
+//        var savedUser = userRepository.save(user);
+//        newUser.setId(savedUser.getId());
+//
+//        return userMapper.toUserOutputDto(savedUser);
+//    }
 
-        Role defaultRole = roleRepository.findByRoleName("User")
-                .orElseThrow(() -> new RuntimeException("Default role 'User' not found"));
-        user.setRole(defaultRole);
-        user.setPassword(passwordEncoder.encode(userInputDto.getPassword()));
+    public UserOutputDto createNewUser(UserInputDto newUser, List<String> roleNames) {
+        List<Role> roles = new ArrayList<>();
+        for (String roleName : roleNames) {
+            Role role = roleRepository.findByRoleName(roleName)
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+            roles.add(role);
+        }
 
-        userRepository.save(user);
+        User user = userMapper.toUser(newUser);
+        user.setRoles(roles);
+        user.setEnabled(true);
+
+        User savedUser = userRepository.save(user);
+        return userMapper.toUserOutputDto(savedUser);
+    }
+
+
+    private void updateRoleUser(User user) {
+        for (Role role : user.getRoles()) {
+            role.getUsers().add(user);
+        }
+    }
+
+    @Transactional
+    public UserOutputDto createNewUser(UserInputDto newUser, String[] roles) {
+        return createNewUser(newUser, Arrays.asList(roles));
+    }
+
+    public Optional<User> getUserByUserName(String username) {
+        var user = userRepository.findByUserName(username);
+        return getOptionalUserModel(user);
+    }
+
+    private Optional<User> getOptionalUserModel(Optional<User> user) {
+        return user;
     }
 
     public boolean authenticate(String userName, String password) {
@@ -65,16 +119,31 @@ public class UserService {
         }
     }
 
-    public UserOutputDto updateUser(Long id, UserInputDto userInputDTO) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+//    public UserOutputDto updateUser(Long id, UserInputDto userInputDTO) {
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        user.setUserName(userInputDTO.getUserName());
+//        user.setPassword(passwordEncoder.encode(userInputDTO.getPassword()));
+//
+//        userRepository.save(user);
+//        return UserMapper.toUserOutputDto(user);
+//    }
 
-        user.setUserName(userInputDTO.getUserName());
-        user.setPassword(passwordEncoder.encode(userInputDTO.getPassword()));
 
-        userRepository.save(user);
-        return UserMapper.toUserOutputDto(user);
+//    public Optional<User> getUserByUserNameAndPassword(String username, String password) {
+//        return userRepository.findByUserNameAndPassword(username, password);
+//    }
+//
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> user = getUserByUserName(username);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException(username);
+        }
+        return new ApiUserDetails(user.get());
     }
+
 
     public boolean deleteUser(Long id) {
         User user = userRepository.findById(id)
@@ -83,5 +152,4 @@ public class UserService {
         userRepository.delete(user);
         return true;
     }
-
 }

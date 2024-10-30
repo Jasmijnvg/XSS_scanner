@@ -1,4 +1,4 @@
-package com.jasmi.xss_scanner.dtos;
+package com.jasmi.xss_scanner.dtos.scanresult;
 
 import lombok.Getter;
 import lombok.Setter;
