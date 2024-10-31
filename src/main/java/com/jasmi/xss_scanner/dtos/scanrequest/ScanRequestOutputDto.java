@@ -1,6 +1,7 @@
 package com.jasmi.xss_scanner.dtos.scanrequest;
 
 
+import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
@@ -15,4 +16,5 @@ public class ScanRequestOutputDto {
     private String screenshotFileType;
 
     private Long scanResult;
+    private Long userId;
 }

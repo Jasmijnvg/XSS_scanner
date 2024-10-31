@@ -1,5 +1,6 @@
 package com.jasmi.xss_scanner.controllers;
 
+import com.jasmi.xss_scanner.dtos.role.RoleDto;
 import com.jasmi.xss_scanner.dtos.user.UserInputDto;
 import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
 import com.jasmi.xss_scanner.mappers.UserDtoMapper;
@@ -37,12 +38,6 @@ public class UserController {
         return ResponseEntity.created(location).body(createdUser);
     }
 
-//    @PostMapping("/user/register")
-//    public ResponseEntity<String> registerUser(@RequestBody UserInputDto userInputDto) {
-//        userService.registerUser(userInputDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body("User registration successful");
-//    }
-
     @GetMapping("/user/{id}")
     public ResponseEntity<UserOutputDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
@@ -53,11 +48,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-//    @PutMapping("/user/{id}")
-//    public ResponseEntity<UserOutputDto> updateUser(@PathVariable Long id, @RequestBody UserInputDto user) {
-//        userService.updateUser(id, user);
-//        return ResponseEntity.noContent().build();
-//    }
+    @PutMapping("/user/{id}/role")
+    public ResponseEntity<UserOutputDto> updateUserRole(@PathVariable Long id,
+                                                        @RequestBody RoleDto roleDto) {
+
+        UserOutputDto updatedUser = userService.updateUserRole(id, roleDto);
+        return ResponseEntity.ok(updatedUser);
+    }
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable long id) {

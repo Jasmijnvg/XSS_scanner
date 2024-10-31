@@ -1,5 +1,6 @@
 package com.jasmi.xss_scanner.security;
 
+import com.jasmi.xss_scanner.dtos.user.UserInputDto;
 import com.jasmi.xss_scanner.models.Role;
 import com.jasmi.xss_scanner.models.User;
 import com.jasmi.xss_scanner.repositories.RoleRepository;
@@ -13,18 +14,22 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ApiUserDetails implements UserDetails {
     private final User user;
+//    private String username;
+//    private List<GrantedAuthority> roles;
+//    private Long id;
 
-    public ApiUserDetails(User user) {
+    public ApiUserDetails(User user){
         this.user = user;
     }
 
-    public ApiUserDetails(String userName, List<String> roles) {
+    public ApiUserDetails(String username, List<String> roles) {
         user = new User();
-        user.setUserName(userName);
+        user.setUserName(username);
 
         for (String role : roles) {
             user.getRoles().add(new Role(role));
@@ -42,7 +47,6 @@ public class ApiUserDetails implements UserDetails {
         return authorities;
     }
 
-
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -50,8 +54,12 @@ public class ApiUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return  user.getId() + "::" + user.getUserName();
+        return user.getUserName();
     }
+//    @Override
+//    public String getUsername() {
+//        return  user.getId() + "::" + user.getUserName();
+//    }
 
 //    @Override
 //    public boolean isAccountNonExpired() {
@@ -70,5 +78,9 @@ public class ApiUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Long getId(){
+        return user.getId();
     }
 }

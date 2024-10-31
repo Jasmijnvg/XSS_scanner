@@ -8,6 +8,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,10 +18,12 @@ import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+    private final UserDetailsService userDetailsService;
 
     private final JwtService jwtService;
 
-    public JwtRequestFilter(JwtService jwtService) {
+    public JwtRequestFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
     }
 
@@ -48,6 +52,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private void processTokenAndSetAuthentication(String jwt, HttpServletRequest request) {
         String username = jwtService.extractUsername(jwt);
         if (username != null && jwtService.validateToken(jwt)) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             List<GrantedAuthority> roles = jwtService.extractSimpleGrantedAuthorities(jwt);
             setAuthentication(username, roles, request, jwt);
         }
@@ -55,13 +60,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private void setAuthentication(String username, List<GrantedAuthority> roles,
                                    HttpServletRequest request, String jwt) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(username, null, roles);
 
         ApiUserDetails userDetails = new ApiUserDetails(username, jwtService.extractRoles(jwt));
-        authenticationToken.setDetails(userDetails);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, roles);
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
+
 }
 

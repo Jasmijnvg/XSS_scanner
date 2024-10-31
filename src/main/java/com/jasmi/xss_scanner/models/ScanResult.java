@@ -24,4 +24,6 @@ public class ScanResult {
             joinColumns = @JoinColumn(name = "scan_result_id"),
             inverseJoinColumns = @JoinColumn(name = "vulnerability_id"))
     private List<Vulnerability> vulnerabilities = new ArrayList<>();
+
+
 }

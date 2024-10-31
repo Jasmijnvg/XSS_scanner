@@ -2,6 +2,7 @@ package com.jasmi.xss_scanner.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,26 +17,49 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
-        this.jwtRequestFilter = jwtRequestFilter;
-    }
-
-    private JwtRequestFilter jwtRequestFilter;
-
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public static PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
                 .httpBasic(hp -> hp.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/xss_scanner_api").permitAll()
-                        .requestMatchers("/xss_scanner_api/**").permitAll()
-                                .requestMatchers("/xss_scanner_api/scan_results").hasRole("admin")
-//                        .requestMatchers("/secure").authenticated()
-//                        .requestMatchers("/secure/admin").hasRole("ADMIN")
-//                        .requestMatchers("/users/**").hasRole("ADMIN")
-//                        .requestMatchers("/secure/user").hasRole("USER")
-//                        .anyRequest().denyAll()
+                        // Toegang voor iedereen
+                        .requestMatchers("/xss_scanner_api/login").permitAll()
+                        .requestMatchers("/xss_scanner_api/signup").permitAll()
+
+                                .requestMatchers("/xss_scanner_api/scan_request").hasAuthority("ROLE_USER")
+                                .requestMatchers(HttpMethod.GET,"/xss_scanner_api/scan_result/**").hasAuthority("ROLE_USER")
+                                 .requestMatchers(HttpMethod.GET,"/xss_scanner_api/solutions").hasAuthority("ROLE_USER")
+                                .requestMatchers(HttpMethod.GET,"/xss_scanner_api/vulnerabilities").hasAuthority("ROLE_USER")
+                                .requestMatchers(HttpMethod.GET,"/xss_scanner_api/scan_requests").hasAuthority("ROLE_USER")
+                                .requestMatchers(HttpMethod.GET,"/xss_scanner_api/scan_results").hasAuthority("ROLE_USER")
+
+                                // InternalUser en Admin toegang voor solutions en vulnerabilities
+                                .requestMatchers(HttpMethod.POST, "/xss_scanner_api/solution/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/xss_scanner_api/solution/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/xss_scanner_api/solution/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/xss_scanner_api/solution/**").hasAuthority("ROLE_ADMIN")
+
+                                .requestMatchers(HttpMethod.POST, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/xss_scanner_api/vulnerability/**").hasAuthority("ROLE_ADMIN")
+
+                                                // Admin toegang voor user management
+                        .requestMatchers(HttpMethod.GET, "/xss_scanner_api/user/**").hasAuthority("ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET,"/xss_scanner_api/users").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/xss_scanner_api/user/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/xss_scanner_api/user/**").hasAuthority("ROLE_ADMIN")
+
+
+
+//                         Deny access to any other request
+                        .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
@@ -43,11 +67,6 @@ public class SecurityConfig {
                 .sessionManagement( session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         ;
         return  http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

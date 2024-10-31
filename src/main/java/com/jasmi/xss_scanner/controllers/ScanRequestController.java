@@ -23,16 +23,6 @@ public class ScanRequestController {
         this.scanRequestService = scanRequestService;
     }
 
-    @GetMapping("/scan_requests")
-    public ResponseEntity<List<ScanRequestOutputDto>> getAllScanRequests() {
-        return ResponseEntity.ok(scanRequestService.getAllScanRequests());
-    }
-
-    @GetMapping("/scan_request/{id}")
-    public ResponseEntity<ScanRequestOutputDto> getScanRequestById(@PathVariable long id){
-        return ResponseEntity.ok(scanRequestService.getScanRequestById(id));
-    }
-
     @PostMapping("/scan_request")
     public ResponseEntity<ScanRequestOutputDto> addScanRequest(@Valid @RequestBody ScanRequestInputDto scanRequest) {
         ScanRequestOutputDto t = scanRequestService.saveScanRequest(scanRequest);
@@ -42,6 +32,16 @@ public class ScanRequestController {
                 .toUri();
 
         return ResponseEntity.created(location).body(t);
+    }
+
+    @GetMapping("/scan_requests")
+    public ResponseEntity<List<ScanRequestOutputDto>> getAllScanRequests() {
+        return ResponseEntity.ok(scanRequestService.getAllScanRequests());
+    }
+
+    @GetMapping("/scan_request/{id}")
+    public ResponseEntity<ScanRequestOutputDto> getScanRequestById(@PathVariable long id){
+        return ResponseEntity.ok(scanRequestService.getScanRequestById(id));
     }
 
     @PostMapping("/scan_request/{id}/screenshot")
@@ -89,15 +89,4 @@ public class ScanRequestController {
         scanRequestService.deleteScanRequest(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/scan_request/{id}/scan_result")
-    public ResponseEntity<String> getScanResult(@PathVariable long id) {
-        ScanRequestOutputDto scanRequestDto = scanRequestService.getScanRequestById(id);
-        if (scanRequestDto.getScanResult() != null) {
-            return ResponseEntity.ok(scanRequestDto.getScanResult().toString());//.getResultData());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
 }

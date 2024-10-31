@@ -30,15 +30,19 @@ VALUES
 
 INSERT INTO roles (active, description, role_name)
 VALUES
-    (true, 'administrator role', 'ROLE_ADMIN'),
-    (true, 'user roles', 'ROLE_USER');
+    (true, 'administrators', 'ROLE_ADMIN'),
+    (true, 'users of the api', 'ROLE_USER'),
+    (true, 'internal users, responsible for adding solutions and vulnerabilities', 'ROLE_INTERNALUSER');
 
 INSERT INTO users (password, user_name, enabled)
 VALUES
-    ('$2a$12$qkWm0strF3KjcMKqGkhn7.gPNDFw3YwH2oTL44R66KH.g8ZAXosL6', 'Jasmijn', true),
-    ('$2a$12$qkWm0strF3KjcMKqGkhn7.gPNDFw3YwH2oTL44R66KH.g8ZAXosL6', 'Jasmijnuser', true);
+    ('$2a$12$qkWm0strF3KjcMKqGkhn7.gPNDFw3YwH2oTL44R66KH.g8ZAXosL6', 'admindummy', true),
+    ('$2a$12$qkWm0strF3KjcMKqGkhn7.gPNDFw3YwH2oTL44R66KH.g8ZAXosL6', 'userdummy', true),
+    ('$2a$12$qkWm0strF3KjcMKqGkhn7.gPNDFw3YwH2oTL44R66KH.g8ZAXosL6', 'internaluserdummy', true);
+
 
 INSERT INTO user_role (user_id, role_id)
 VALUES
     (1,1),
-    (2,2)
+    (2,2),
+    (3,3)

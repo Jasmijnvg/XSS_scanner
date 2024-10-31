@@ -5,6 +5,8 @@ import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.models.ScanRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
 public class ScanRequestMapper {
 
@@ -17,6 +19,9 @@ public class ScanRequestMapper {
         dto.setScreenshotFileName(scanRequest.getScreenshotFilename());
         dto.setScreenshotFileType(scanRequest.getScreenshotFileType());
         dto.setScanResult(scanRequest.getScanResult().getId());
+        if (scanRequest.getUser() != null) {
+            dto.setUserId(scanRequest.getUser().getId());
+        }
 
         return dto;
     }

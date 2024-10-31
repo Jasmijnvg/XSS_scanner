@@ -15,4 +15,5 @@ public class ScanRequestInputDto {
     private byte[] screenshot;
     private String screenshotFileName;
     private String screenshotFileType;
+    private long userId;
 }

@@ -2,16 +2,23 @@ package com.jasmi.xss_scanner.services;
 
 import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestInputDto;
 import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
+import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanRequestMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
 import com.jasmi.xss_scanner.models.ScanResult;
+import com.jasmi.xss_scanner.models.User;
 import com.jasmi.xss_scanner.models.Vulnerability;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import com.jasmi.xss_scanner.repositories.ScanResultRepository;
+import com.jasmi.xss_scanner.repositories.UserRepository;
 import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
+import com.jasmi.xss_scanner.security.ApiUserDetails;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,11 +32,15 @@ public class ScanRequestService {
     private final ScanRequestRepository scanRequestRepository;
     private final ScanRequestMapper scanRequestMapper;
     private final VulnerabilityRepository vulnerabilityRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public ScanRequestService(ScanRequestRepository scanRequestRepository, ScanRequestMapper scanRequestMapper, VulnerabilityRepository vulnerabilityRepository, ScanResultRepository scanResultRepository) {
+    public ScanRequestService(ScanRequestRepository scanRequestRepository, ScanRequestMapper scanRequestMapper, VulnerabilityRepository vulnerabilityRepository, ScanResultRepository scanResultRepository, UserRepository userRepository, UserService userService) {
         this.scanRequestRepository = scanRequestRepository;
         this.scanRequestMapper = scanRequestMapper;
         this.vulnerabilityRepository = vulnerabilityRepository;
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public List<ScanRequestOutputDto> getAllScanRequests() {
@@ -51,13 +62,69 @@ public class ScanRequestService {
 
     public ScanRequestOutputDto saveScanRequest(ScanRequestInputDto scanRequestInputDto) {
         ScanRequest scanRequest = scanRequestMapper.toScanRequest(scanRequestInputDto);
+
         ScanResult scanResult = performScanAndCreateResult(scanRequest);
         scanRequest.setScanResult(scanResult);
+
+        addUserToScanRequest(scanRequest);
 
         ScanRequest savedScanRequest = scanRequestRepository.save(scanRequest);
 
         return scanRequestMapper.toScanRequestDto(savedScanRequest);
     }
+
+    private void addUserToScanRequest(ScanRequest scanRequest) {
+        Object username = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (username instanceof UserDetails) {
+            String actualUsername = ((UserDetails) username).getUsername();
+
+            User user = userRepository.findByUserName(actualUsername)
+                    .orElseThrow(() -> new RecordNotFoundException("User with username " + actualUsername + " not found"));
+
+            scanRequest.setUser(user);
+            user.getScanRequests().add(scanRequest);
+            scanRequestRepository.save(scanRequest);
+        } else {
+            throw new IllegalStateException("No authenticated user found");
+        }
+    }
+
+
+
+
+//    private void addUserToScanRequest(ScanRequest scanRequest) {
+//        // Haal de geauthenticeerde gebruiker op
+//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        if (userDetails instanceof ApiUserDetails) {
+//            ApiUserDetails apiUserDetails = (ApiUserDetails) userDetails;
+//
+//            // Gebruik de ID van de geauthenticeerde gebruiker
+//            Long userId = apiUserDetails.getId();
+//
+//            User user = userRepository.findById(userId)
+//                    .orElseThrow(() -> new RecordNotFoundException("User " + userId + " not found"));
+//
+//            scanRequest.setUser(user);
+//            user.getScanRequests().add(scanRequest); // Optioneel, indien je dit wilt bijhouden
+//            userRepository.save(user); // Opslaan van de gebruiker kan noodzakelijk zijn als er wijzigingen zijn
+//        } else {
+//            throw new IllegalStateException("No authenticated user found");
+//        }
+//    }
+
+//    private void addUserToScanRequest(ScanRequest scanRequest, ScanRequestInputDto scanRequestInputDto) {
+//        Long userId = scanRequestInputDto.getUserId();
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RecordNotFoundException("User "+userId+" not found"));
+//
+//        user.getScanRequests().add(scanRequest);
+//        scanRequest.setUser(user);
+//
+//        userRepository.save(user);
+//    }
+
 
     private ScanResult performScanAndCreateResult(ScanRequest scanRequest) {
 

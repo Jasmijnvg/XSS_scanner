@@ -30,8 +30,17 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+//    public String extractUsername(String token) {
+//        return extractClaim(token, Claims::getSubject);
+//    }
+
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        String subject = extractClaim(token, Claims::getSubject);
+
+        if (subject != null && subject.contains("::")) {
+            return subject.split("::")[1];
+        }
+        return subject;
     }
 
     public String extractAudience(String token) {
