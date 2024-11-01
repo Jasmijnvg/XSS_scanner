@@ -30,4 +30,7 @@ public class ScanRequest {
     @OneToOne(mappedBy="scanRequest", cascade=CascadeType.ALL)
     private ScanResult scanResult;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

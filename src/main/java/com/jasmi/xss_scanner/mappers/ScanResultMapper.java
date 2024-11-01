@@ -1,10 +1,7 @@
 package com.jasmi.xss_scanner.mappers;
 
-import com.jasmi.xss_scanner.dtos.ScanResultInputDto;
-import com.jasmi.xss_scanner.dtos.ScanResultOutputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultOutputDto;
 import com.jasmi.xss_scanner.models.ScanResult;
-import com.jasmi.xss_scanner.services.ScanRequestService;
-import com.jasmi.xss_scanner.services.VulnerabilityService;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -26,6 +23,9 @@ public class ScanResultMapper {
         if(scanResult.getScanRequest()!=null){
             dto.setScannedUrl(scanResult.getScanRequest().getUrl());
             dto.setScanDate(scanResult.getScanRequest().getRequestTimestamp());
+            if(scanResult.getScanRequest().getUser() != null){
+                dto.setUserName((scanResult.getScanRequest().getUser().getUserName()));
+            }
         }
         if(scanResult.getVulnerabilities()!=null){
             dto.setVulnerabilities(
@@ -36,10 +36,5 @@ public class ScanResultMapper {
             );
         }
         return dto;
-    }
-
-    public ScanResult toScanResult(ScanResultInputDto dto) {
-        var scanResult = new ScanResult();
-        return scanResult;
     }
 }

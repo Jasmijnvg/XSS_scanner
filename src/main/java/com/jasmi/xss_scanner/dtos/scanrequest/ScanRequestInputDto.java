@@ -1,4 +1,4 @@
-package com.jasmi.xss_scanner.dtos;
+package com.jasmi.xss_scanner.dtos.scanrequest;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -15,4 +15,5 @@ public class ScanRequestInputDto {
     private byte[] screenshot;
     private String screenshotFileName;
     private String screenshotFileType;
+    private long userId;
 }

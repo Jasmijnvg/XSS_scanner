@@ -1,7 +1,6 @@
 package com.jasmi.xss_scanner.services;
 
-import com.jasmi.xss_scanner.dtos.ScanResultInputDto;
-import com.jasmi.xss_scanner.dtos.ScanResultOutputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultOutputDto;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanResultMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
@@ -9,11 +8,15 @@ import com.jasmi.xss_scanner.models.ScanResult;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import com.jasmi.xss_scanner.repositories.ScanResultRepository;
 import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
+import com.jasmi.xss_scanner.security.ApiUserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +32,34 @@ public class ScanResultService {
     }
 
     public List<ScanResultOutputDto> getAllScanResults() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new SecurityException("User is not authenticated");
+        }
+
+        if (isUserRole(authentication, "ROLE_USER")) {
+            return getScanResultsForUser();
+        } else {
+            return getAllScanResultsForAdmins();
+        }
+    }
+
+    private boolean isUserRole(Authentication authentication, String role) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(r -> r.equals(role));
+    }
+
+    private List<ScanResultOutputDto> getScanResultsForUser() {
+        String username = getCurrentUser();
+        return scanResultRepository.findByScanRequestUserName(username)
+                .stream()
+                .map(scanResultMapper::toScanResultDto)
+                .peek(this::addScreenshotUrlToScanResult)
+                .collect(Collectors.toList());
+    }
+
+    private List<ScanResultOutputDto> getAllScanResultsForAdmins() {
         return scanResultRepository.findAll()
                 .stream()
                 .map(scanResultMapper::toScanResultDto)
@@ -37,24 +68,32 @@ public class ScanResultService {
     }
 
     public ScanResultOutputDto getScanResultById(Long id) {
-        Optional<ScanResult> scanResult = scanResultRepository.findById(id);
-        if (scanResult.isPresent()) {
-            ScanResultOutputDto dto = scanResultMapper.toScanResultDto(scanResult.get());
-            addScreenshotUrlToScanResult(dto);
-            return dto;
-        } else {
-            throw new RecordNotFoundException("ScanResult " + id + " not found");
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = getCurrentUser();
+        String currentRole = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("");
+
+        List<ScanResult> scanResults = getAccessibleScanResults(username, currentRole);
+
+        return scanResults.stream()
+                .filter(scanResult -> scanResult.getId().equals(id))
+                .findFirst()
+                .map(scanResult -> {
+                    ScanResultOutputDto dto = scanResultMapper.toScanResultDto(scanResult);
+                    addScreenshotUrlToScanResult(dto);
+                    return dto;
+                })
+                .orElseThrow(() -> new RecordNotFoundException("Scan result not found or this user does not have access"));
     }
 
-    public ScanResultOutputDto updateScanResult(Long id, ScanResultInputDto scanResultDto) {
-        if (!scanResultRepository.existsById(id)) {
-            throw new RecordNotFoundException("ScanResult " + id + " not found");
+    private List<ScanResult> getAccessibleScanResults(String username, String role) {
+        if ("ROLE_USER".equals(role)) {
+            return scanResultRepository.findByScanRequestUserName(username);
+        } else {
+            return scanResultRepository.findAll();
         }
-        ScanResult scanResult = scanResultMapper.toScanResult(scanResultDto);
-        scanResult.setId(id);
-        ScanResult updatedScanResult = scanResultRepository.save(scanResult);
-        return scanResultMapper.toScanResultDto(updatedScanResult);
     }
 
     public void deleteScanResult(Long id) {
@@ -67,11 +106,11 @@ public class ScanResultService {
 
     private void addScreenshotUrlToScanResult(ScanResultOutputDto dto) {
         ScanRequest scanRequest = scanRequestRepository.findById(dto.getId())
-                .orElseThrow(() -> new RecordNotFoundException("ScanRequest "+dto.getId()+" not found"));
+                .orElseThrow(() -> new RecordNotFoundException("Scan request "+dto.getId()+" not found"));
 
         if (hasScreenshot(scanRequest.getId())) {
             String screenshotUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/xss_scanner_api/scanrequest/" + scanRequest.getId() + "/screenshot")
+                    .path("/xss_scanner_api/scan_request/" + scanRequest.getId() + "/screenshot")
                     .toUriString();
             dto.setScreenshotUrl(screenshotUrl);
         }
@@ -86,4 +125,11 @@ public class ScanResultService {
                 .orElse(false);
     }
 
+    private String getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((ApiUserDetails) principal).getUsername();
+        }
+        return null;
+    }
 }

@@ -1,18 +1,24 @@
 package com.jasmi.xss_scanner.services;
 
-import com.jasmi.xss_scanner.dtos.ScanRequestInputDto;
-import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
+import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestInputDto;
+import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
+import com.jasmi.xss_scanner.exceptions.BadRequestException;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanRequestMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
 import com.jasmi.xss_scanner.models.ScanResult;
+import com.jasmi.xss_scanner.models.User;
 import com.jasmi.xss_scanner.models.Vulnerability;
 import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import com.jasmi.xss_scanner.repositories.ScanResultRepository;
+import com.jasmi.xss_scanner.repositories.UserRepository;
 import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,11 +31,15 @@ public class ScanRequestService {
     private final ScanRequestRepository scanRequestRepository;
     private final ScanRequestMapper scanRequestMapper;
     private final VulnerabilityRepository vulnerabilityRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public ScanRequestService(ScanRequestRepository scanRequestRepository, ScanRequestMapper scanRequestMapper, VulnerabilityRepository vulnerabilityRepository, ScanResultRepository scanResultRepository) {
+    public ScanRequestService(ScanRequestRepository scanRequestRepository, ScanRequestMapper scanRequestMapper, VulnerabilityRepository vulnerabilityRepository, ScanResultRepository scanResultRepository, UserRepository userRepository, UserService userService) {
         this.scanRequestRepository = scanRequestRepository;
         this.scanRequestMapper = scanRequestMapper;
         this.vulnerabilityRepository = vulnerabilityRepository;
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public List<ScanRequestOutputDto> getAllScanRequests() {
@@ -49,14 +59,35 @@ public class ScanRequestService {
         }
     }
 
+    @Transactional
     public ScanRequestOutputDto saveScanRequest(ScanRequestInputDto scanRequestInputDto) {
         ScanRequest scanRequest = scanRequestMapper.toScanRequest(scanRequestInputDto);
+
         ScanResult scanResult = performScanAndCreateResult(scanRequest);
         scanRequest.setScanResult(scanResult);
+
+        addUserToScanRequest(scanRequest);
 
         ScanRequest savedScanRequest = scanRequestRepository.save(scanRequest);
 
         return scanRequestMapper.toScanRequestDto(savedScanRequest);
+    }
+
+    private void addUserToScanRequest(ScanRequest scanRequest) {
+        Object username = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (username instanceof UserDetails) {
+            String actualUsername = ((UserDetails) username).getUsername();
+
+            User user = userRepository.findByUserName(actualUsername)
+                    .orElseThrow(() -> new RecordNotFoundException("User with username " + actualUsername + " not found"));
+
+            scanRequest.setUser(user);
+            user.getScanRequests().add(scanRequest);
+            scanRequestRepository.save(scanRequest);
+        } else {
+            throw new BadRequestException("No authenticated user found");
+        }
     }
 
     private ScanResult performScanAndCreateResult(ScanRequest scanRequest) {
@@ -122,6 +153,7 @@ public class ScanRequestService {
         }
     }
 
+    @Transactional
     public void deleteScanRequest(long id) {
         if (scanRequestRepository.existsById(id)) {
             scanRequestRepository.deleteById(id);
@@ -130,6 +162,7 @@ public class ScanRequestService {
         }
     }
 
+    @Transactional
     public ScanRequestOutputDto addScreenshotToScanRequest(byte[] screenshot, String fileName, String fileType, Long id) {
         ScanRequest scanRequest = scanRequestRepository.findById(id)
                 .orElseThrow(()-> new RecordNotFoundException("ScanRequest not found for id "+id));
@@ -143,6 +176,7 @@ public class ScanRequestService {
         return scanRequestMapper.toScanRequestDto(scanRequest);
     }
 
+    @Transactional
     public byte[] getScreenshotById(Long id) {
         Optional<ScanRequest> optionalScanRequest = scanRequestRepository.findById(id);
         if(optionalScanRequest.isEmpty()){

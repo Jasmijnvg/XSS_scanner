@@ -1,10 +1,11 @@
 package com.jasmi.xss_scanner.controllers;
 
-import com.jasmi.xss_scanner.dtos.ScanRequestInputDto;
-import com.jasmi.xss_scanner.dtos.ScanRequestOutputDto;
+import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestInputDto;
+import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.services.ScanRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,16 +24,6 @@ public class ScanRequestController {
         this.scanRequestService = scanRequestService;
     }
 
-    @GetMapping("/scan_requests")
-    public ResponseEntity<List<ScanRequestOutputDto>> getAllScanRequests() {
-        return ResponseEntity.ok(scanRequestService.getAllScanRequests());
-    }
-
-    @GetMapping("/scan_request/{id}")
-    public ResponseEntity<ScanRequestOutputDto> getScanRequestById(@PathVariable long id){
-        return ResponseEntity.ok(scanRequestService.getScanRequestById(id));
-    }
-
     @PostMapping("/scan_request")
     public ResponseEntity<ScanRequestOutputDto> addScanRequest(@Valid @RequestBody ScanRequestInputDto scanRequest) {
         ScanRequestOutputDto t = scanRequestService.saveScanRequest(scanRequest);
@@ -42,6 +33,16 @@ public class ScanRequestController {
                 .toUri();
 
         return ResponseEntity.created(location).body(t);
+    }
+
+    @GetMapping("/scan_requests")
+    public ResponseEntity<List<ScanRequestOutputDto>> getAllScanRequests() {
+        return ResponseEntity.ok(scanRequestService.getAllScanRequests());
+    }
+
+    @GetMapping("/scan_request/{id}")
+    public ResponseEntity<ScanRequestOutputDto> getScanRequestById(@PathVariable long id){
+        return ResponseEntity.ok(scanRequestService.getScanRequestById(id));
     }
 
     @PostMapping("/scan_request/{id}/screenshot")
@@ -60,6 +61,7 @@ public class ScanRequestController {
         return ResponseEntity.created(location).body(scanRequest);
     }
 
+    @Transactional
     @GetMapping("/scan_request/{id}/screenshot")
     public ResponseEntity<byte[]> getScanRequestScreenshot(@PathVariable("id") Long id) {
         byte[] screenshot = scanRequestService.getScreenshotById(id);
@@ -89,15 +91,4 @@ public class ScanRequestController {
         scanRequestService.deleteScanRequest(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/scan_request/{id}/scan_result")
-    public ResponseEntity<String> getScanResult(@PathVariable long id) {
-        ScanRequestOutputDto scanRequestDto = scanRequestService.getScanRequestById(id);
-        if (scanRequestDto.getScanResult() != null) {
-            return ResponseEntity.ok(scanRequestDto.getScanResult().toString());//.getResultData());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
 }

@@ -1,13 +1,10 @@
 package com.jasmi.xss_scanner.controllers;
 
-import com.jasmi.xss_scanner.dtos.ScanResultInputDto;
-import com.jasmi.xss_scanner.dtos.ScanResultOutputDto;
+import com.jasmi.xss_scanner.dtos.scanresult.ScanResultOutputDto;
 import com.jasmi.xss_scanner.services.ScanResultService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,12 +25,6 @@ public class ScanResultController {
     @GetMapping("/scan_result/{id}")
     public ResponseEntity<ScanResultOutputDto> getScanResult(@PathVariable Long id) {
         return ResponseEntity.ok(scanResultService.getScanResultById(id));
-    }
-
-    @PutMapping("/scan_result/{id}")
-    public ResponseEntity<Void> updateScanResult(@PathVariable Long id, @RequestBody ScanResultInputDto scanResultInputDto) {
-        scanResultService.updateScanResult(id, scanResultInputDto);
-        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/scan_result/{id}")
