@@ -2,11 +2,13 @@ package com.jasmi.xss_scanner.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Solution {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +24,12 @@ public class Solution {
     @ManyToOne
     @JoinColumn(name = "vulnerability_id")
     private Vulnerability vulnerability;
+
+    public Solution(String vulnerabilityType, String solution, String implementationSteps, String externalResourceLink, Vulnerability vulnerability) {
+        this.vulnerabilityType = vulnerabilityType;
+        this.solution = solution;
+        this.implementationSteps = implementationSteps;
+        this.externalResourceLink = externalResourceLink;
+        this.vulnerability = vulnerability;
+    }
 }
