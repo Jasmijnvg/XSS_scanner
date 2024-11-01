@@ -1,14 +1,11 @@
 package com.jasmi.xss_scanner.mappers;
 
-import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.dtos.user.UserInputDto;
 import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
 import com.jasmi.xss_scanner.models.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component

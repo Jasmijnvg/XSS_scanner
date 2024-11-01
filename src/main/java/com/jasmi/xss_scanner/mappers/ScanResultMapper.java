@@ -24,6 +24,9 @@ public class ScanResultMapper {
         if(scanResult.getScanRequest()!=null){
             dto.setScannedUrl(scanResult.getScanRequest().getUrl());
             dto.setScanDate(scanResult.getScanRequest().getRequestTimestamp());
+            if(scanResult.getScanRequest().getUser() != null){
+                dto.setUserName((scanResult.getScanRequest().getUser().getUserName()));
+            }
         }
         if(scanResult.getVulnerabilities()!=null){
             dto.setVulnerabilities(
@@ -34,10 +37,5 @@ public class ScanResultMapper {
             );
         }
         return dto;
-    }
-
-    public ScanResult toScanResult(ScanResultInputDto dto) {
-        var scanResult = new ScanResult();
-        return scanResult;
     }
 }
