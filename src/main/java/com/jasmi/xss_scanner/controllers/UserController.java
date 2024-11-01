@@ -3,7 +3,7 @@ package com.jasmi.xss_scanner.controllers;
 import com.jasmi.xss_scanner.dtos.role.RoleDto;
 import com.jasmi.xss_scanner.dtos.user.UserInputDto;
 import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
-import com.jasmi.xss_scanner.mappers.UserDtoMapper;
+//import com.jasmi.xss_scanner.mappers.UserDtoMapper;
 import com.jasmi.xss_scanner.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -18,12 +18,10 @@ import java.util.List;
 @RequestMapping("/xss_scanner_api")
 public class UserController {
     private final UserService userService;
-    private final UserDtoMapper userDtoMapper;
     private final HttpServletRequest httpServletRequest;
 
-    public UserController(UserService userService, UserDtoMapper userDtoMapper, HttpServletRequest httpServletRequest) {
+    public UserController(UserService userService, HttpServletRequest httpServletRequest) {
         this.userService = userService;
-        this.userDtoMapper = userDtoMapper;
         this.httpServletRequest = httpServletRequest;
     }
 

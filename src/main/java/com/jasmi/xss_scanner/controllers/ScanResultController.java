@@ -28,11 +28,11 @@ public class ScanResultController {
         return ResponseEntity.ok(scanResultService.getScanResultById(id));
     }
 
-    @PutMapping("/scan_result/{id}")
-    public ResponseEntity<Void> updateScanResult(@PathVariable Long id, @RequestBody ScanResultInputDto scanResultInputDto) {
-        scanResultService.updateScanResult(id, scanResultInputDto);
-        return ResponseEntity.noContent().build();
-    }
+//    @PutMapping("/scan_result/{id}")
+//    public ResponseEntity<Void> updateScanResult(@PathVariable Long id, @RequestBody ScanResultInputDto scanResultInputDto) {
+//        scanResultService.updateScanResult(id, scanResultInputDto);
+//        return ResponseEntity.noContent().build();
+//    }
 
     @DeleteMapping("/scan_result/{id}")
     public ResponseEntity<Void> deleteScanResult(@PathVariable Long id) {

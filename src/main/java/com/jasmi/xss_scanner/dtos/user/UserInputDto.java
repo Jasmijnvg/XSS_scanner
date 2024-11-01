@@ -14,11 +14,11 @@ import java.util.List;
 @Setter
 public class UserInputDto {
     private Long id;
-    @NotEmpty(message = "Username may not be empty")
+    @NotEmpty(message = "Username is required")
     @Size(min = 6, message = "Username needs at least 6 characters")
     private String userName;
-    @NotEmpty(message = "Password may not be empty")
-    @Size(min = 8, message = "Password needs at least 8 characters")
+    @NotEmpty(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
     private List<RoleDto> roles = new ArrayList<>();
     private boolean isEnabled;

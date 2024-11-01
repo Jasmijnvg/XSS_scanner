@@ -5,6 +5,7 @@ import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.services.ScanRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -60,6 +61,7 @@ public class ScanRequestController {
         return ResponseEntity.created(location).body(scanRequest);
     }
 
+    @Transactional
     @GetMapping("/scan_request/{id}/screenshot")
     public ResponseEntity<byte[]> getScanRequestScreenshot(@PathVariable("id") Long id) {
         byte[] screenshot = scanRequestService.getScreenshotById(id);

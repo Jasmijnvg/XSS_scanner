@@ -80,12 +80,6 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-//    public boolean authenticate(String userName, String password) {
-//        Optional<User> userOptional = userRepository.findByUserName(userName);
-//        return userOptional.isPresent() &&
-//                passwordEncoder.matches(password, userOptional.get().getPassword());
-//    }
-
     public List<UserOutputDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()

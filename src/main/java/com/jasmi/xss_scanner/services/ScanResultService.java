@@ -47,15 +47,15 @@ public class ScanResultService {
         }
     }
 
-    public ScanResultOutputDto updateScanResult(Long id, ScanResultInputDto scanResultDto) {
-        if (!scanResultRepository.existsById(id)) {
-            throw new RecordNotFoundException("ScanResult " + id + " not found");
-        }
-        ScanResult scanResult = scanResultMapper.toScanResult(scanResultDto);
-        scanResult.setId(id);
-        ScanResult updatedScanResult = scanResultRepository.save(scanResult);
-        return scanResultMapper.toScanResultDto(updatedScanResult);
-    }
+//    public ScanResultOutputDto updateScanResult(Long id, ScanResultInputDto scanResultDto) {
+//        if (!scanResultRepository.existsById(id)) {
+//            throw new RecordNotFoundException("ScanResult " + id + " not found");
+//        }
+//        ScanResult scanResult = scanResultMapper.toScanResult(scanResultDto);
+//        scanResult.setId(id);
+//        ScanResult updatedScanResult = scanResultRepository.save(scanResult);
+//        return scanResultMapper.toScanResultDto(updatedScanResult);
+//    }
 
     public void deleteScanResult(Long id) {
         if (scanResultRepository.existsById(id)) {
@@ -67,11 +67,11 @@ public class ScanResultService {
 
     private void addScreenshotUrlToScanResult(ScanResultOutputDto dto) {
         ScanRequest scanRequest = scanRequestRepository.findById(dto.getId())
-                .orElseThrow(() -> new RecordNotFoundException("ScanRequest "+dto.getId()+" not found"));
+                .orElseThrow(() -> new RecordNotFoundException("Scan request "+dto.getId()+" not found"));
 
         if (hasScreenshot(scanRequest.getId())) {
             String screenshotUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/xss_scanner_api/scanrequest/" + scanRequest.getId() + "/screenshot")
+                    .path("/xss_scanner_api/scan_request/" + scanRequest.getId() + "/screenshot")
                     .toUriString();
             dto.setScreenshotUrl(screenshotUrl);
         }

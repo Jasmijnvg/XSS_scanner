@@ -3,6 +3,7 @@ package com.jasmi.xss_scanner.services;
 import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestInputDto;
 import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
 import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
+import com.jasmi.xss_scanner.exceptions.BadRequestException;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanRequestMapper;
 import com.jasmi.xss_scanner.models.ScanRequest;
@@ -20,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,6 +62,7 @@ public class ScanRequestService {
         }
     }
 
+    @Transactional
     public ScanRequestOutputDto saveScanRequest(ScanRequestInputDto scanRequestInputDto) {
         ScanRequest scanRequest = scanRequestMapper.toScanRequest(scanRequestInputDto);
 
@@ -86,45 +89,9 @@ public class ScanRequestService {
             user.getScanRequests().add(scanRequest);
             scanRequestRepository.save(scanRequest);
         } else {
-            throw new IllegalStateException("No authenticated user found");
+            throw new BadRequestException("No authenticated user found");
         }
     }
-
-
-
-
-//    private void addUserToScanRequest(ScanRequest scanRequest) {
-//        // Haal de geauthenticeerde gebruiker op
-//        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//        if (userDetails instanceof ApiUserDetails) {
-//            ApiUserDetails apiUserDetails = (ApiUserDetails) userDetails;
-//
-//            // Gebruik de ID van de geauthenticeerde gebruiker
-//            Long userId = apiUserDetails.getId();
-//
-//            User user = userRepository.findById(userId)
-//                    .orElseThrow(() -> new RecordNotFoundException("User " + userId + " not found"));
-//
-//            scanRequest.setUser(user);
-//            user.getScanRequests().add(scanRequest); // Optioneel, indien je dit wilt bijhouden
-//            userRepository.save(user); // Opslaan van de gebruiker kan noodzakelijk zijn als er wijzigingen zijn
-//        } else {
-//            throw new IllegalStateException("No authenticated user found");
-//        }
-//    }
-
-//    private void addUserToScanRequest(ScanRequest scanRequest, ScanRequestInputDto scanRequestInputDto) {
-//        Long userId = scanRequestInputDto.getUserId();
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RecordNotFoundException("User "+userId+" not found"));
-//
-//        user.getScanRequests().add(scanRequest);
-//        scanRequest.setUser(user);
-//
-//        userRepository.save(user);
-//    }
-
 
     private ScanResult performScanAndCreateResult(ScanRequest scanRequest) {
 
@@ -189,6 +156,7 @@ public class ScanRequestService {
         }
     }
 
+    @Transactional
     public void deleteScanRequest(long id) {
         if (scanRequestRepository.existsById(id)) {
             scanRequestRepository.deleteById(id);
@@ -197,6 +165,7 @@ public class ScanRequestService {
         }
     }
 
+    @Transactional
     public ScanRequestOutputDto addScreenshotToScanRequest(byte[] screenshot, String fileName, String fileType, Long id) {
         ScanRequest scanRequest = scanRequestRepository.findById(id)
                 .orElseThrow(()-> new RecordNotFoundException("ScanRequest not found for id "+id));
@@ -210,6 +179,7 @@ public class ScanRequestService {
         return scanRequestMapper.toScanRequestDto(scanRequest);
     }
 
+    @Transactional
     public byte[] getScreenshotById(Long id) {
         Optional<ScanRequest> optionalScanRequest = scanRequestRepository.findById(id);
         if(optionalScanRequest.isEmpty()){
