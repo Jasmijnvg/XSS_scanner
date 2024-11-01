@@ -1,6 +1,5 @@
 package com.jasmi.xss_scanner.mappers;
 
-import com.jasmi.xss_scanner.dtos.scanresult.ScanResultInputDto;
 import com.jasmi.xss_scanner.dtos.scanresult.ScanResultOutputDto;
 import com.jasmi.xss_scanner.models.ScanResult;
 import org.springframework.stereotype.Component;

@@ -4,6 +4,7 @@ import com.jasmi.xss_scanner.dtos.user.UserLoginRequestDto;
 import com.jasmi.xss_scanner.security.ApiUserDetails;
 import com.jasmi.xss_scanner.security.JwtService;
 import com.jasmi.xss_scanner.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody UserLoginRequestDto userLoginRequestDto) {
+    public ResponseEntity<Object> login(@RequestBody @Valid UserLoginRequestDto userLoginRequestDto) {
         UsernamePasswordAuthenticationToken up =
                 new UsernamePasswordAuthenticationToken(userLoginRequestDto.getUserName(), userLoginRequestDto.getPassword());
 

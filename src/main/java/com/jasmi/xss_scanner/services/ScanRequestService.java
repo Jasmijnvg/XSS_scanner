@@ -2,7 +2,6 @@ package com.jasmi.xss_scanner.services;
 
 import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestInputDto;
 import com.jasmi.xss_scanner.dtos.scanrequest.ScanRequestOutputDto;
-import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
 import com.jasmi.xss_scanner.exceptions.BadRequestException;
 import com.jasmi.xss_scanner.exceptions.RecordNotFoundException;
 import com.jasmi.xss_scanner.mappers.ScanRequestMapper;
@@ -14,10 +13,8 @@ import com.jasmi.xss_scanner.repositories.ScanRequestRepository;
 import com.jasmi.xss_scanner.repositories.ScanResultRepository;
 import com.jasmi.xss_scanner.repositories.UserRepository;
 import com.jasmi.xss_scanner.repositories.VulnerabilityRepository;
-import com.jasmi.xss_scanner.security.ApiUserDetails;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

@@ -3,7 +3,6 @@ package com.jasmi.xss_scanner.controllers;
 import com.jasmi.xss_scanner.dtos.role.RoleDto;
 import com.jasmi.xss_scanner.dtos.user.UserInputDto;
 import com.jasmi.xss_scanner.dtos.user.UserOutputDto;
-//import com.jasmi.xss_scanner.mappers.UserDtoMapper;
 import com.jasmi.xss_scanner.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

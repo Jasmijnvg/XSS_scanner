@@ -29,7 +29,7 @@ public class SecurityConfig {
         http
                 .httpBasic(hp -> hp.disable())
                 .authorizeHttpRequests(auth -> auth
-                                // Toegang voor iedereen
+
                                 .requestMatchers("/xss_scanner_api/login").permitAll()
                                 .requestMatchers("/xss_scanner_api/signup").permitAll()
                                 .requestMatchers("/xss_scanner_api/scan_request").permitAll()
@@ -37,7 +37,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_results").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_result/**").permitAll()
 
-                                // InternalUser en Admin toegang
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_requests").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_request/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
 
@@ -51,8 +50,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
 
-
-                                // Admin toegang
                                 .requestMatchers(HttpMethod.DELETE, "/xss_scanner_api/scan_request/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/xss_scanner_api/scan_result/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/xss_scanner_api/vulnerability/**").hasAuthority("ROLE_ADMIN")
@@ -62,7 +59,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/xss_scanner_api/user/**").hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/xss_scanner_api/user/**").hasAuthority("ROLE_ADMIN")
 
-                                // Deny access to any other request
                                 .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
