@@ -78,7 +78,7 @@ public class SolutionTest {
 
         // Assert
         assertEquals(1, solutions.size());
-        assertEquals("Fix SQL Injection", solutions.get(0).getSolution());
+        assertEquals("Fix SQL Injection", solutions.getFirst().getSolution());
     }
 
     @Test
