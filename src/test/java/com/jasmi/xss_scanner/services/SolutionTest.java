@@ -30,6 +30,9 @@ public class SolutionTest {
     @Mock
     private SolutionMapper solutionMapper;
 
+    @Mock
+    private VulnerabilityRepository vulnerabilityRepository;
+
     @InjectMocks
     private SolutionService solutionService;
 
@@ -101,4 +104,75 @@ public class SolutionTest {
         assertThrows(RecordNotFoundException.class, () -> solutionService.getSolutionById(1L));
     }
 
+    @Test
+    public void shouldSaveSolution() {
+        // Arrange
+        when(vulnerabilityRepository.findByName("SQL Injection")).thenReturn(Optional.of(vulnerability));
+        when(solutionMapper.toSolution(solutionInputDto)).thenReturn(solution);
+        when(solutionRepository.save(solution)).thenReturn(solution);
+        when(solutionMapper.toSolutionDto(solution)).thenReturn(solutionOutputDto);
+
+        // Act
+        SolutionOutputDto result = solutionService.saveSolution(solutionInputDto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Fix SQL Injection", result.getSolution());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenSavingSolutionWithNonExistentVulnerability() {
+        // Arrange
+        when(vulnerabilityRepository.findByName("SQL Injection")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RecordNotFoundException.class, () -> solutionService.saveSolution(solutionInputDto));
+    }
+
+    @Test
+    public void shouldUpdateSolution() {
+        // Arrange
+        when(solutionRepository.existsById(1L)).thenReturn(true);
+        when(solutionMapper.toSolution(solutionInputDto)).thenReturn(solution);
+        when(solutionRepository.save(solution)).thenReturn(solution);
+        when(solutionMapper.toSolutionDto(solution)).thenReturn(solutionOutputDto);
+
+        // Act
+        SolutionOutputDto result = solutionService.updateSolution(1L, solutionInputDto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Fix SQL Injection", result.getSolution());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUpdatingNonExistentSolution() {
+        // Arrange
+        when(solutionRepository.existsById(1L)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(RecordNotFoundException.class, () -> solutionService.updateSolution(1L, solutionInputDto));
+    }
+
+    @Test
+    public void shouldDeleteSolution() {
+        // Arrange
+        when(solutionRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(solutionRepository).deleteById(1L);
+
+        // Act
+        solutionService.deleteSolution(1L);
+
+        // Assert
+        verify(solutionRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenDeletingNonExistentSolution() {
+        // Arrange
+        when(solutionRepository.existsById(1L)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(RecordNotFoundException.class, () -> solutionService.deleteSolution(1L));
+    }
 }
