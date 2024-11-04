@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 public class SolutionInputDto {
     private long vulnerabilityId;
+    @NotNull(message = "vulnerability type may not be empty and must match existing vulnerability")
     private String vulnerabilityType;
     @NotNull(message = "solution may not be empty")
     private String solution;

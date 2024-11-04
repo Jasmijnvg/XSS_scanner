@@ -16,6 +16,7 @@ public class ScanRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long id;
 
+    @Column(columnDefinition="varchar(500)")
     private String url;
 
     @CreationTimestamp
