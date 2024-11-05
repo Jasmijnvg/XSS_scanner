@@ -44,10 +44,8 @@ public class SolutionService {
     }
 
     public SolutionOutputDto saveSolution(SolutionInputDto solutionDto) {
-        Vulnerability vulnerability = vulnerabilityRepository.findByName(solutionDto.getVulnerabilityType())
-                .orElseThrow(() -> new RecordNotFoundException("Vulnerability not found for type: " + solutionDto.getVulnerabilityType()));
-
         Solution solution = solutionMapper.toSolution(solutionDto);
+        Vulnerability vulnerability = findVulnerabilityByName(solutionDto.getVulnerabilityType());
 
         solution.setVulnerability(vulnerability);
 
@@ -60,10 +58,20 @@ public class SolutionService {
         if (!solutionRepository.existsById(id)) {
             throw new RecordNotFoundException("Solution " + id + " not found");
         }
-        Solution s = solutionMapper.toSolution(updatedSolution);
-        s.setId(id);
-        Solution updated = solutionRepository.save(s);
+
+        Solution solution = solutionMapper.toSolution(updatedSolution);
+
+        Vulnerability vulnerability = findVulnerabilityByName(updatedSolution.getVulnerabilityType());
+        solution.setVulnerability(vulnerability);
+
+        solution.setId(id);
+        Solution updated = solutionRepository.save(solution);
         return solutionMapper.toSolutionDto(updated);
+    }
+
+    private Vulnerability findVulnerabilityByName(String vulnerabilityType) {
+        return vulnerabilityRepository.findByName(vulnerabilityType)
+                .orElseThrow(() -> new RecordNotFoundException("Vulnerability with type " + vulnerabilityType + " not found. Please check if vulnerability exists"));
     }
 
     public void deleteSolution(long id) {
