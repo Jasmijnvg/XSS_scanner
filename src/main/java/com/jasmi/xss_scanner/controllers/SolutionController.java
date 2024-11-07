@@ -39,7 +39,7 @@ public class SolutionController {
     }
 
     @PutMapping("/solution/{id}")
-    public ResponseEntity<Void> updateSolution(@Valid @PathVariable long id, @RequestBody SolutionInputDto solution) {
+    public ResponseEntity<Void> updateSolution(@Valid @PathVariable long id, @Valid @RequestBody SolutionInputDto solution) {
         solutionService.updateSolution(id, solution);
         return ResponseEntity.noContent().build();
     }

@@ -75,10 +75,6 @@ public class UserService implements UserDetailsService {
         var user = userRepository.findByUserName(username);
         return user;
     }
-//
-//    private Optional<User> getOptionalUserModel(Optional<User> user) {
-//        return user;
-//    }
 
     public List<UserOutputDto> getAllUsers() {
         return userRepository.findAll()
@@ -118,5 +114,4 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
         return true;
     }
-
 }

@@ -112,7 +112,7 @@ public class ScanRequestService {
                 logResults(url, detectedVulnerabilities);
             }
         } catch (IOException e) {
-            System.out.println("error fetching URL: " + e.getMessage());
+            throw new BadRequestException("Error fetching URL: " + url);
         }
 
         return detectedVulnerabilities;

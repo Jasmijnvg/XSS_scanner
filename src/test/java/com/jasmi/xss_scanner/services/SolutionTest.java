@@ -133,6 +133,7 @@ public class SolutionTest {
     public void shouldUpdateSolution() {
         // Arrange
         when(solutionRepository.existsById(1L)).thenReturn(true);
+        when(vulnerabilityRepository.findByName("SQL Injection")).thenReturn(Optional.of(vulnerability));
         when(solutionMapper.toSolution(solutionInputDto)).thenReturn(solution);
         when(solutionRepository.save(solution)).thenReturn(solution);
         when(solutionMapper.toSolutionDto(solution)).thenReturn(solutionOutputDto);
@@ -143,6 +144,8 @@ public class SolutionTest {
         // Assert
         assertNotNull(result);
         assertEquals("Fix SQL Injection", result.getSolution());
+        verify(vulnerabilityRepository, times(1)).findByName("SQL Injection");
+        verify(solutionRepository, times(1)).save(solution);
     }
 
     @Test

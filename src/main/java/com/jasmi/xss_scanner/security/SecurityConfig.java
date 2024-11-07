@@ -36,16 +36,16 @@ public class SecurityConfig {
                                 .requestMatchers("xss_scanner_api/scan_request/*/screenshot").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_results").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_result/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/xss_scanner_api/vulnerabilities").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_requests").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/scan_request/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
 
-                                .requestMatchers(HttpMethod.GET, "/xss_scanner_api/solutions").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/xss_scanner_api/solution/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/solution/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/xss_scanner_api/solution/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/xss_scanner_api/solutions").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
 
-                                .requestMatchers(HttpMethod.GET, "/xss_scanner_api/vulnerabilities").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/xss_scanner_api/vulnerability/**").hasAnyAuthority("ROLE_INTERNALUSER", "ROLE_ADMIN")
